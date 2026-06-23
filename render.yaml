@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: inventory-portal
+    runtime: node
+    buildCommand: npm install
+    startCommand: node inventory_portal.js
+    envVars:
+      - key: FEISHU_APP_SECRET
+        sync: false
