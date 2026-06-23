@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>退货收货窗口</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <h1>📦 退货收货窗口</h1>
+    <span class="version">v1.0</span>
+  </header>
+
+  <!-- Scan Input Area -->
+  <div class="scan-area">
+    <label class="scan-label" for="scanInput">🔍 扫描或输入运单号</label>
+    <input
+      type="text"
+      id="scanInput"
+      class="scan-input"
+      placeholder="扫码枪扫描运单号，或手动输入后按回车..."
+      autofocus
+      autocomplete="off"
+    >
+    <div class="scan-hint">扫描后自动查询 · 按回车搜索 · 点击页面任意处恢复聚焦</div>
+  </div>
+
+  <!-- Results Area -->
+  <div id="resultsContainer" class="results-container hidden">
+    <!-- Package Summary Bar -->
+    <div class="package-bar">
+      <span class="package-tracking">📋 <strong id="pkgTracking"></strong></span>
+      <span class="package-count">共 <strong id="pkgCount"></strong> 件</span>
+      <span id="pkgStatus" class="package-status"></span>
+      <button id="btnBulkConfirm" class="btn btn-success btn-bulk" onclick="App.bulkConfirm()">
+        ⏎ 一键确认全部收货
+      </button>
+    </div>
+
+    <!-- Item Cards -->
+    <div id="itemCards" class="item-cards"></div>
+  </div>
+
+  <!-- Empty State -->
+  <div id="emptyState" class="empty-state">
+    <div class="empty-icon">📭</div>
+    <div class="empty-title">扫描或输入运单号开始收货</div>
+    <div class="empty-desc">扫码枪扫描条码后自动查询，支持 Enter 触发搜索</div>
+  </div>
+
+  <!-- Loading State -->
+  <div id="loadingState" class="loading-state hidden">
+    <div class="spinner"></div>
+    <div>正在查询...</div>
+  </div>
+
+  <!-- Error State -->
+  <div id="errorState" class="error-state hidden">
+    <div id="errorMessage" class="error-message"></div>
+  </div>
+
+  <!-- Discrepancy Note Modal -->
+  <div id="discModal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-title">📝 差异备注</div>
+      <textarea id="discNote" class="modal-textarea" placeholder="请描述差异详情（如：缺少1件、外包装破损等）..." rows="3"></textarea>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="App.closeDiscModal()">取消</button>
+        <button class="btn btn-danger" id="btnSubmitDisc">提交异常</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Log -->
+  <footer class="activity-log" id="activityLog">
+    <div class="activity-title">📜 最近操作</div>
+    <div id="activityList" class="activity-list">
+      <div class="activity-empty">暂无操作记录</div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/scanner.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/state.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

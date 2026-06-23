@@ -1,0 +1,1874 @@
+{
+  "summary": {
+    "warehouseTotal": 311,
+    "matched": 164,
+    "quantityDiff": 48,
+    "unmatched": 99,
+    "ncUnmatched": 1
+  },
+  "diffDetails": [
+    {
+      "materialCode": "6839AA000625",
+      "materialName": "70迈汽车轮胎充气泵青春版",
+      "trackingNo": "粵A13NJ5",
+      "customer": "南通思陌智能科技有限公司阜阳调惠州仓）",
+      "whQty": 1344,
+      "ncQty": 2004,
+      "diff": -660,
+      "status": "⚠️ 数量差异",
+      "whRow": 71,
+      "ncTrackingNos": [
+        "粵A13NJ5"
+      ],
+      "ncDocNos": [
+        "OUT202606020005"
+      ]
+    },
+    {
+      "materialCode": "6839AA000625",
+      "materialName": "70迈汽车轮胎充气泵青春版",
+      "trackingNo": "粵A13NJ5",
+      "customer": "南通思陌智能科技有限公司阜阳调惠州仓）",
+      "whQty": 660,
+      "ncQty": 2004,
+      "diff": -1344,
+      "status": "⚠️ 数量差异",
+      "whRow": 72,
+      "ncTrackingNos": [
+        "粵A13NJ5"
+      ],
+      "ncDocNos": [
+        "OUT202606020005"
+      ]
+    },
+    {
+      "materialCode": "6839AA800367",
+      "materialName": "整机外置胎压监控系统TPMS-太阳能版（外购）",
+      "trackingNo": "粵L706JH",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 200,
+      "ncQty": 60,
+      "diff": 140,
+      "status": "⚠️ 数量差异",
+      "whRow": 153,
+      "ncTrackingNos": [
+        "粵L706JH"
+      ],
+      "ncDocNos": [
+        "OUT202606040118"
+      ]
+    },
+    {
+      "materialCode": "6839AA800144",
+      "materialName": "70迈停车监控线",
+      "trackingNo": "粵L706JH",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 360,
+      "ncQty": 775,
+      "diff": -415,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 155,
+      "ncTrackingNos": [
+        "KY4001005462730",
+        "KY4001005462734",
+        "KY4001005462732",
+        "KY4001005462728",
+        "KY4001005462726",
+        "KY4001005462739",
+        "KY4001005462738",
+        "KY4001005462727",
+        "KY4001005462736"
+      ],
+      "ncDocNos": [
+        "OUT202606040044",
+        "OUT202606040038",
+        "OUT202606040029",
+        "OUT202606040040",
+        "OUT202606040033",
+        "OUT202606040065",
+        "OUT202606040043",
+        "OUT202606040032",
+        "OUT202606040039"
+      ]
+    },
+    {
+      "materialCode": "6839AA800308",
+      "materialName": "整机UP06-停车监控线-海外通用版本（外购）",
+      "trackingNo": "粵L706JH",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 360,
+      "ncQty": 900,
+      "diff": -540,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 156,
+      "ncTrackingNos": [
+        "粤B2P31C",
+        "KY4001043447615"
+      ],
+      "ncDocNos": [
+        "OUT202606020019",
+        "OUT202606020027",
+        "OUT202606010025"
+      ]
+    },
+    {
+      "materialCode": "6839AA000271",
+      "materialName": "70迈汽车轮胎充气泵",
+      "trackingNo": "粵L706JH",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 60,
+      "ncQty": 120,
+      "diff": -60,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 157,
+      "ncTrackingNos": [
+        "KY4001005462731",
+        "KY4001005462727",
+        "KY4001005462734",
+        "KY4001005462726"
+      ],
+      "ncDocNos": [
+        "OUT202606040012",
+        "OUT202606040017",
+        "OUT202606040019",
+        "OUT202606040009",
+        "OUT202606040008",
+        "OUT202606040020",
+        "OUT202606040021"
+      ]
+    },
+    {
+      "materialCode": "6839AA800065",
+      "materialName": "70迈外置GPS模块",
+      "trackingNo": "粵L706JH",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 80,
+      "ncQty": 5,
+      "diff": 75,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 160,
+      "ncTrackingNos": [
+        "KY4001005462728"
+      ],
+      "ncDocNos": [
+        "OUT202606040040"
+      ]
+    },
+    {
+      "materialCode": "6839AA800313",
+      "materialName": "0",
+      "trackingNo": "粵L706JH",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 300,
+      "ncQty": 50,
+      "diff": 250,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 161,
+      "ncTrackingNos": [
+        "KY4001043447615"
+      ],
+      "ncDocNos": [
+        "OUT202606010025"
+      ]
+    },
+    {
+      "materialCode": "6839AA800367",
+      "materialName": "整机外置胎压监控系统TPMS-太阳能版（外购）",
+      "trackingNo": "粵L706JH",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 20,
+      "ncQty": 60,
+      "diff": -40,
+      "status": "⚠️ 数量差异",
+      "whRow": 163,
+      "ncTrackingNos": [
+        "粵L706JH"
+      ],
+      "ncDocNos": [
+        "OUT202606040118"
+      ]
+    },
+    {
+      "materialCode": "6839AA800367",
+      "materialName": "整机外置胎压监控系统TPMS-太阳能版（外购）",
+      "trackingNo": "粵L706JH",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 40,
+      "ncQty": 60,
+      "diff": -20,
+      "status": "⚠️ 数量差异",
+      "whRow": 164,
+      "ncTrackingNos": [
+        "粵L706JH"
+      ],
+      "ncDocNos": [
+        "OUT202606040118"
+      ]
+    },
+    {
+      "materialCode": "6839AA800296",
+      "materialName": "70迈停车监控线",
+      "trackingNo": "粵L706JH",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 60,
+      "ncQty": 2515,
+      "diff": -2455,
+      "status": "⚠️ 数量差异",
+      "whRow": 165,
+      "ncTrackingNos": [
+        "粵L706JH"
+      ],
+      "ncDocNos": [
+        "OUT202606040108",
+        "OUT202606040110",
+        "OUT202606040119"
+      ]
+    },
+    {
+      "materialCode": "7601AA800008",
+      "materialName": "70迈产品配件（A500系列）",
+      "trackingNo": "粵L706JH",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 480,
+      "ncQty": 500,
+      "diff": -20,
+      "status": "⚠️ 数量差异",
+      "whRow": 167,
+      "ncTrackingNos": [
+        "粵L706JH"
+      ],
+      "ncDocNos": [
+        "OUT202606040120"
+      ]
+    },
+    {
+      "materialCode": "7601AA800008",
+      "materialName": "70迈产品配件（A500系列）",
+      "trackingNo": "粵L706JH",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 20,
+      "ncQty": 500,
+      "diff": -480,
+      "status": "⚠️ 数量差异",
+      "whRow": 168,
+      "ncTrackingNos": [
+        "粵L706JH"
+      ],
+      "ncDocNos": [
+        "OUT202606040120"
+      ]
+    },
+    {
+      "materialCode": "6839AA800296",
+      "materialName": "70迈停车监控线",
+      "trackingNo": "粵L706JH",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 2400,
+      "ncQty": 2515,
+      "diff": -115,
+      "status": "⚠️ 数量差异",
+      "whRow": 170,
+      "ncTrackingNos": [
+        "粵L706JH"
+      ],
+      "ncDocNos": [
+        "OUT202606040108",
+        "OUT202606040110",
+        "OUT202606040119"
+      ]
+    },
+    {
+      "materialCode": "6839AA800296",
+      "materialName": "70迈停车监控线",
+      "trackingNo": "粵L706JH",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 55,
+      "ncQty": 2515,
+      "diff": -2460,
+      "status": "⚠️ 数量差异",
+      "whRow": 171,
+      "ncTrackingNos": [
+        "粵L706JH"
+      ],
+      "ncDocNos": [
+        "OUT202606040108",
+        "OUT202606040110",
+        "OUT202606040119"
+      ]
+    },
+    {
+      "materialCode": "6839AA800308",
+      "materialName": "整机UP06-停车监控线-海外通用版本（外购）",
+      "trackingNo": "粤B2P31C",
+      "customer": "深圳朗华供应链服务有限公司",
+      "whQty": 360,
+      "ncQty": 840,
+      "diff": -480,
+      "status": "⚠️ 数量差异",
+      "whRow": 172,
+      "ncTrackingNos": [
+        "粤B2P31C"
+      ],
+      "ncDocNos": [
+        "OUT202606020019",
+        "OUT202606020027"
+      ]
+    },
+    {
+      "materialCode": "6839AA800308",
+      "materialName": "整机UP06-停车监控线-海外通用版本（外购）",
+      "trackingNo": "粤B2P31C",
+      "customer": "深圳朗华供应链服务有限公司",
+      "whQty": 480,
+      "ncQty": 840,
+      "diff": -360,
+      "status": "⚠️ 数量差异",
+      "whRow": 175,
+      "ncTrackingNos": [
+        "粤B2P31C"
+      ],
+      "ncDocNos": [
+        "OUT202606020019",
+        "OUT202606020027"
+      ]
+    },
+    {
+      "materialCode": "4850AA800003",
+      "materialName": "70迈记录仪专用存储卡（64GB）",
+      "trackingNo": "粵L706JH",
+      "customer": "",
+      "whQty": 4000,
+      "ncQty": 1000,
+      "diff": 3000,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 183,
+      "ncTrackingNos": [
+        "KY4001005462737"
+      ],
+      "ncDocNos": [
+        "OUT202606040024"
+      ]
+    },
+    {
+      "materialCode": "6830AA800559",
+      "materialName": "70迈 M310Pro4K行车记录仪 超清 赠64g",
+      "trackingNo": "KY4001005462729",
+      "customer": "西安京东自营",
+      "whQty": 40,
+      "ncQty": 42,
+      "diff": -2,
+      "status": "⚠️ 数量差异",
+      "whRow": 184,
+      "ncTrackingNos": [
+        "KY4001005462729"
+      ],
+      "ncDocNos": [
+        "OUT202606040025",
+        "OUT202606040045"
+      ]
+    },
+    {
+      "materialCode": "6830AA800530",
+      "materialName": "70迈A400Pro行车记录仪 4K超高清影像 2英寸屏幕 停车监控 小巧设计",
+      "trackingNo": "KY4001005462732",
+      "customer": "广州京东自营",
+      "whQty": 16,
+      "ncQty": 65,
+      "diff": -49,
+      "status": "⚠️ 数量差异",
+      "whRow": 203,
+      "ncTrackingNos": [
+        "KY4001005462732"
+      ],
+      "ncDocNos": [
+        "OUT202606040029",
+        "OUT202606040023"
+      ]
+    },
+    {
+      "materialCode": "6830AA800437",
+      "materialName": "70迈智能行车记录仪A510Lite 3K超高清夜视 停车监控【抽小米净化器】",
+      "trackingNo": "KY4001005462732",
+      "customer": "广州京东自营",
+      "whQty": 306,
+      "ncQty": 319,
+      "diff": -13,
+      "status": "⚠️ 数量差异",
+      "whRow": 213,
+      "ncTrackingNos": [
+        "KY4001005462732"
+      ],
+      "ncDocNos": [
+        "OUT202606040023",
+        "OUT202606040031"
+      ]
+    },
+    {
+      "materialCode": "6830AA800559",
+      "materialName": "70迈 M310Pro4K行车记录仪 超清 赠64g",
+      "trackingNo": "KY4001005462729",
+      "customer": "西安京东自营",
+      "whQty": 2,
+      "ncQty": 42,
+      "diff": -40,
+      "status": "⚠️ 数量差异",
+      "whRow": 214,
+      "ncTrackingNos": [
+        "KY4001005462729"
+      ],
+      "ncDocNos": [
+        "OUT202606040025",
+        "OUT202606040045"
+      ]
+    },
+    {
+      "materialCode": "6830AA800437",
+      "materialName": "70迈智能行车记录仪A510Lite 3K超高清夜视 停车监控【抽小米净化器】",
+      "trackingNo": "KY4001005462732",
+      "customer": "广州京东自营",
+      "whQty": 13,
+      "ncQty": 319,
+      "diff": -306,
+      "status": "⚠️ 数量差异",
+      "whRow": 216,
+      "ncTrackingNos": [
+        "KY4001005462732"
+      ],
+      "ncDocNos": [
+        "OUT202606040023",
+        "OUT202606040031"
+      ]
+    },
+    {
+      "materialCode": "6830AA800530",
+      "materialName": "70迈A400Pro行车记录仪 4K超高清影像 2英寸屏幕 停车监控 小巧设计",
+      "trackingNo": "KY4001005462732",
+      "customer": "广州京东自营",
+      "whQty": 49,
+      "ncQty": 65,
+      "diff": -16,
+      "status": "⚠️ 数量差异",
+      "whRow": 218,
+      "ncTrackingNos": [
+        "KY4001005462732"
+      ],
+      "ncDocNos": [
+        "OUT202606040029",
+        "OUT202606040023"
+      ]
+    },
+    {
+      "materialCode": "6839AA000271",
+      "materialName": "70迈汽车轮胎充气泵",
+      "trackingNo": "KY4001005462734",
+      "customer": "上海京东自营",
+      "whQty": 60,
+      "ncQty": 66,
+      "diff": -6,
+      "status": "⚠️ 数量差异",
+      "whRow": 222,
+      "ncTrackingNos": [
+        "KY4001005462734"
+      ],
+      "ncDocNos": [
+        "OUT202606040009",
+        "OUT202606040021"
+      ]
+    },
+    {
+      "materialCode": "6839AA000271",
+      "materialName": "70迈汽车轮胎充气泵",
+      "trackingNo": "KY4001005462727",
+      "customer": "北京京东自营",
+      "whQty": 12,
+      "ncQty": 18,
+      "diff": -6,
+      "status": "⚠️ 数量差异",
+      "whRow": 223,
+      "ncTrackingNos": [
+        "KY4001005462727"
+      ],
+      "ncDocNos": [
+        "OUT202606040017",
+        "OUT202606040019"
+      ]
+    },
+    {
+      "materialCode": "6839AA000271",
+      "materialName": "70迈汽车轮胎充气泵",
+      "trackingNo": "KY4001005462731",
+      "customer": "德州京东自营",
+      "whQty": 24,
+      "ncQty": 30,
+      "diff": -6,
+      "status": "⚠️ 数量差异",
+      "whRow": 224,
+      "ncTrackingNos": [
+        "KY4001005462731"
+      ],
+      "ncDocNos": [
+        "OUT202606040012",
+        "OUT202606040020"
+      ]
+    },
+    {
+      "materialCode": "6839AA000271",
+      "materialName": "70迈汽车轮胎充气泵",
+      "trackingNo": "KY4001005462731",
+      "customer": "德州京东自营",
+      "whQty": 6,
+      "ncQty": 30,
+      "diff": -24,
+      "status": "⚠️ 数量差异",
+      "whRow": 227,
+      "ncTrackingNos": [
+        "KY4001005462731"
+      ],
+      "ncDocNos": [
+        "OUT202606040012",
+        "OUT202606040020"
+      ]
+    },
+    {
+      "materialCode": "6839AA000271",
+      "materialName": "70迈汽车轮胎充气泵",
+      "trackingNo": "KY4001005462727",
+      "customer": "北京京东自营",
+      "whQty": 6,
+      "ncQty": 18,
+      "diff": -12,
+      "status": "⚠️ 数量差异",
+      "whRow": 228,
+      "ncTrackingNos": [
+        "KY4001005462727"
+      ],
+      "ncDocNos": [
+        "OUT202606040017",
+        "OUT202606040019"
+      ]
+    },
+    {
+      "materialCode": "6839AA000271",
+      "materialName": "70迈汽车轮胎充气泵",
+      "trackingNo": "KY4001005462734",
+      "customer": "上海京东自营",
+      "whQty": 6,
+      "ncQty": 66,
+      "diff": -60,
+      "status": "⚠️ 数量差异",
+      "whRow": 231,
+      "ncTrackingNos": [
+        "KY4001005462734"
+      ],
+      "ncDocNos": [
+        "OUT202606040009",
+        "OUT202606040021"
+      ]
+    },
+    {
+      "materialCode": "6839AA800300",
+      "materialName": "70迈汽车应急电源二代",
+      "trackingNo": "KY4001006441552",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 12,
+      "ncQty": 6,
+      "diff": 6,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 280,
+      "ncTrackingNos": [
+        "KY4001005462733"
+      ],
+      "ncDocNos": [
+        "OUT202606040018"
+      ]
+    },
+    {
+      "materialCode": "6830AA800306",
+      "materialName": "70迈4K智能记录仪M800(64G )",
+      "trackingNo": "粤BCD5248",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 24,
+      "ncQty": 77,
+      "diff": -53,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 282,
+      "ncTrackingNos": [
+        "KY4001014453890",
+        "KY4001014453888",
+        "KY4001014453889",
+        "KY4001005462734",
+        "KY4001014453887",
+        "KY4001005462732",
+        "KY4001014453896",
+        "KY4001005462726",
+        "KY4001014453891",
+        "KY4001014453895",
+        "KY4001005462739",
+        "KY4001014453894"
+      ],
+      "ncDocNos": [
+        "OUT202606040063",
+        "OUT202606040062",
+        "OUT202606040061",
+        "OUT202606040038",
+        "OUT202606040055",
+        "OUT202606040023",
+        "OUT202606040046",
+        "OUT202606040033",
+        "OUT202606040060",
+        "OUT202606040059",
+        "OUT202606040065",
+        "OUT202606040047"
+      ]
+    },
+    {
+      "materialCode": "6839AA800270",
+      "materialName": "70迈流媒体记录仪S500含（RC13）套装版",
+      "trackingNo": "粤BCD5248",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 60,
+      "ncQty": 31,
+      "diff": 29,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 283,
+      "ncTrackingNos": [
+        "KY4001014453888",
+        "KY4001005462737",
+        "KY4001014453891"
+      ],
+      "ncDocNos": [
+        "OUT202606040062",
+        "OUT202606040024",
+        "OUT202606040060"
+      ]
+    },
+    {
+      "materialCode": "6839AA800296",
+      "materialName": "70迈M500专用停车监控线",
+      "trackingNo": "粤BCD5248",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 60,
+      "ncQty": 4738,
+      "diff": -4678,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 284,
+      "ncTrackingNos": [
+        "粵L706JH",
+        "KY4001006402631",
+        "KY4001014453889",
+        "KY4001043447615",
+        "KY4001015483062",
+        "粤B2P31C"
+      ],
+      "ncDocNos": [
+        "OUT202606040108",
+        "OUT202606040102",
+        "OUT202606040061",
+        "OUT202606040110",
+        "OUT202606010025",
+        "OUT202606030015",
+        "OUT202606040119",
+        "OUT202606030009"
+      ]
+    },
+    {
+      "materialCode": "6830AA800561",
+      "materialName": "70迈智能记录仪M310 Pro2K",
+      "trackingNo": "粤BCD5248",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 800,
+      "ncQty": 53,
+      "diff": 747,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 285,
+      "ncTrackingNos": [
+        "KY4001005462737",
+        "KY4001005462739",
+        "KY4001005462736"
+      ],
+      "ncDocNos": [
+        "OUT202606040024",
+        "OUT202606040065",
+        "OUT202606040039"
+      ]
+    },
+    {
+      "materialCode": "6830AA800562",
+      "materialName": "70迈智能记录仪M310 Pro 3K",
+      "trackingNo": "粤BCD5248",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 800,
+      "ncQty": 52,
+      "diff": 748,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 286,
+      "ncTrackingNos": [
+        "KY4001005462734",
+        "KY4001014453897",
+        "KY4001005462736"
+      ],
+      "ncDocNos": [
+        "OUT202606040022",
+        "OUT202606040054",
+        "OUT202606040039"
+      ]
+    },
+    {
+      "materialCode": "6830AA800626",
+      "materialName": "70 迈智能记录仪 A400 Pro 3K",
+      "trackingNo": "粤BCD5248",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 240,
+      "ncQty": 272,
+      "diff": -32,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 287,
+      "ncTrackingNos": [
+        "KY4001005462737"
+      ],
+      "ncDocNos": [
+        "OUT202606040024"
+      ]
+    },
+    {
+      "materialCode": "6830AA800437",
+      "materialName": "70迈智能记录仪A510 lite",
+      "trackingNo": "粤BCD5248",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 108,
+      "ncQty": 336,
+      "diff": -228,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 289,
+      "ncTrackingNos": [
+        "KY4001014453888",
+        "KY4001005462732",
+        "KY4001014453896",
+        "KY4001005462734",
+        "KY4001014453894"
+      ],
+      "ncDocNos": [
+        "OUT202606040062",
+        "OUT202606040023",
+        "OUT202606040046",
+        "OUT202606040022",
+        "OUT202606040031",
+        "OUT202606040047"
+      ]
+    },
+    {
+      "materialCode": "6839AA800298",
+      "materialName": "70迈后录摄像头RC22",
+      "trackingNo": "粤BCD5248",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 120,
+      "ncQty": 570,
+      "diff": -450,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 291,
+      "ncTrackingNos": [
+        "粵L706JH",
+        "粵A13NJ5"
+      ],
+      "ncDocNos": [
+        "OUT202606040118",
+        "OUT202606020005"
+      ]
+    },
+    {
+      "materialCode": "6819AA800072",
+      "materialName": "70迈4K后录摄像头RC41",
+      "trackingNo": "粤BCD5248",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 20,
+      "ncQty": 1,
+      "diff": 19,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 293,
+      "ncTrackingNos": [
+        "KY4001014453890"
+      ],
+      "ncDocNos": [
+        "OUT202606040063"
+      ]
+    },
+    {
+      "materialCode": "6839AA800284",
+      "materialName": "70迈车内后录镜头RC24",
+      "trackingNo": "粤BCD5248",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 30,
+      "ncQty": 35,
+      "diff": -5,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 294,
+      "ncTrackingNos": [
+        "KY4001005462728",
+        "KY4001005462731"
+      ],
+      "ncDocNos": [
+        "OUT202606040040",
+        "OUT202606040026"
+      ]
+    },
+    {
+      "materialCode": "6839AA800144",
+      "materialName": "70迈停车监控线+欧盟",
+      "trackingNo": "KY4001096476357",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 20,
+      "ncQty": 775,
+      "diff": -755,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 302,
+      "ncTrackingNos": [
+        "KY4001005462730",
+        "KY4001005462734",
+        "KY4001005462732",
+        "KY4001005462728",
+        "KY4001005462726",
+        "KY4001005462739",
+        "KY4001005462738",
+        "KY4001005462727",
+        "KY4001005462736"
+      ],
+      "ncDocNos": [
+        "OUT202606040044",
+        "OUT202606040038",
+        "OUT202606040029",
+        "OUT202606040040",
+        "OUT202606040033",
+        "OUT202606040065",
+        "OUT202606040043",
+        "OUT202606040032",
+        "OUT202606040039"
+      ]
+    },
+    {
+      "materialCode": "6839AA800308",
+      "materialName": "整机UP06-停车监控线-海外通用版本（外购）",
+      "trackingNo": "KY4001096476358",
+      "customer": "深圳朗华供应链服务有限公司",
+      "whQty": 300,
+      "ncQty": 900,
+      "diff": -600,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 305,
+      "ncTrackingNos": [
+        "粤B2P31C",
+        "KY4001043447615"
+      ],
+      "ncDocNos": [
+        "OUT202606020019",
+        "OUT202606020027",
+        "OUT202606010025"
+      ]
+    },
+    {
+      "materialCode": "6839AA800296",
+      "materialName": "70迈停车监控线",
+      "trackingNo": "KY4001078481513",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 640,
+      "ncQty": 4738,
+      "diff": -4098,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 306,
+      "ncTrackingNos": [
+        "粵L706JH",
+        "KY4001006402631",
+        "KY4001014453889",
+        "KY4001043447615",
+        "KY4001015483062",
+        "粤B2P31C"
+      ],
+      "ncDocNos": [
+        "OUT202606040108",
+        "OUT202606040102",
+        "OUT202606040061",
+        "OUT202606040110",
+        "OUT202606010025",
+        "OUT202606030015",
+        "OUT202606040119",
+        "OUT202606030009"
+      ]
+    },
+    {
+      "materialCode": "6839AA800313",
+      "materialName": "0",
+      "trackingNo": "KY4001078481513",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 150,
+      "ncQty": 50,
+      "diff": 100,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 309,
+      "ncTrackingNos": [
+        "KY4001043447615"
+      ],
+      "ncDocNos": [
+        "OUT202606010025"
+      ]
+    },
+    {
+      "materialCode": "6839AA800284",
+      "materialName": "AC0302整机黑色RC24后录, 彩盒版(外购)",
+      "trackingNo": "KY4001078481513",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 30,
+      "ncQty": 35,
+      "diff": -5,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 310,
+      "ncTrackingNos": [
+        "KY4001005462728",
+        "KY4001005462731"
+      ],
+      "ncDocNos": [
+        "OUT202606040040",
+        "OUT202606040026"
+      ]
+    },
+    {
+      "materialCode": "6819AA800072",
+      "materialName": "BYC_AC0302_A41,机头黑色RC41 4K后录(彩盒版、NT98529BG)（外购）",
+      "trackingNo": "KY4001078481513",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 30,
+      "ncQty": 1,
+      "diff": 29,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 311,
+      "ncTrackingNos": [
+        "KY4001014453890"
+      ],
+      "ncDocNos": [
+        "OUT202606040063"
+      ]
+    },
+    {
+      "materialCode": "6839AA800308",
+      "materialName": "整机UP06-停车监控线-海外通用版本（外购）",
+      "trackingNo": "KY4001078481513",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 60,
+      "ncQty": 900,
+      "diff": -840,
+      "status": "🔶 物料匹配-数量差异(单号不同)",
+      "whRow": 312,
+      "ncTrackingNos": [
+        "粤B2P31C",
+        "KY4001043447615"
+      ],
+      "ncDocNos": [
+        "OUT202606020019",
+        "OUT202606020027",
+        "OUT202606010025"
+      ]
+    }
+  ],
+  "unmatchedWarehouse": [
+    {
+      "materialCode": "6830AA800538",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light2 Pro智能无线宠物饮水机 猫咪饮水机酸奶机",
+      "trackingNo": "KY4001013417976",
+      "logistics": "跨越",
+      "customer": "上海京东自营",
+      "whQty": 30,
+      "whRow": 2
+    },
+    {
+      "materialCode": "6839AA800243",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light专用滤棉配件替换",
+      "trackingNo": "KY4001013417976",
+      "logistics": "跨越",
+      "customer": "上海京东自营",
+      "whQty": 25,
+      "whRow": 3
+    },
+    {
+      "materialCode": "7601AA800153",
+      "materialName": "滤芯 一盒三片装 通用型",
+      "trackingNo": "KY4001013417976",
+      "logistics": "跨越",
+      "customer": "上海京东自营",
+      "whQty": 150,
+      "whRow": 4
+    },
+    {
+      "materialCode": "6842AA800127",
+      "materialName": "Hiigge嗨吉雪顶饮水机恒温配件(恒温底盘)猫咪饮水机狗狗喂水器",
+      "trackingNo": "KY4001013417976",
+      "logistics": "跨越",
+      "customer": "上海京东自营",
+      "whQty": 5,
+      "whRow": 5
+    },
+    {
+      "materialCode": "6842AA800048",
+      "materialName": "Hiigge嗨吉雪仓喂食器喂食器干燥盒套装 猫咪喂食器狗狗喂食器",
+      "trackingNo": "KY4001013417976",
+      "logistics": "跨越",
+      "customer": "上海京东自营",
+      "whQty": 65,
+      "whRow": 6
+    },
+    {
+      "materialCode": "6839AA800251",
+      "materialName": "Hiigge嗨吉宠物湿粮碗木质底座防打翻设计猫碗 猫罐头碗猫碗",
+      "trackingNo": "KY4001013417976",
+      "logistics": "跨越",
+      "customer": "上海京东自营",
+      "whQty": 8,
+      "whRow": 7
+    },
+    {
+      "materialCode": "6830AA800538",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light2 Pro智能无线宠物饮水机 猫咪饮水机酸奶机",
+      "trackingNo": "KY4001013417971",
+      "logistics": "跨越",
+      "customer": "北京京东自营",
+      "whQty": 15,
+      "whRow": 8
+    },
+    {
+      "materialCode": "6839AA800243",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light专用滤棉配件替换",
+      "trackingNo": "KY4001013417971",
+      "logistics": "跨越",
+      "customer": "北京京东自营",
+      "whQty": 40,
+      "whRow": 9
+    },
+    {
+      "materialCode": "7601AA800153",
+      "materialName": "滤芯 一盒三片装 通用型",
+      "trackingNo": "KY4001013417971",
+      "logistics": "跨越",
+      "customer": "北京京东自营",
+      "whQty": 120,
+      "whRow": 10
+    },
+    {
+      "materialCode": "6842AA800048",
+      "materialName": "Hiigge嗨吉雪仓喂食器喂食器干燥盒套装 猫咪喂食器狗狗喂食器",
+      "trackingNo": "KY4001013417971",
+      "logistics": "跨越",
+      "customer": "北京京东自营",
+      "whQty": 50,
+      "whRow": 11
+    },
+    {
+      "materialCode": "6839AA800251",
+      "materialName": "Hiigge嗨吉宠物湿粮碗木质底座防打翻设计猫碗 猫罐头碗猫碗",
+      "trackingNo": "KY4001013417971",
+      "logistics": "跨越",
+      "customer": "北京京东自营",
+      "whQty": 30,
+      "whRow": 12
+    },
+    {
+      "materialCode": "6830AA800362",
+      "materialName": "Hiigge雪顶饮水机Light智能无线宠物饮水机猫咪饮水机狗狗喂水器",
+      "trackingNo": "KY4001013417971",
+      "logistics": "跨越",
+      "customer": "北京京东自营",
+      "whQty": 6,
+      "whRow": 13
+    },
+    {
+      "materialCode": "6830AA800538",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light2 Pro智能无线宠物饮水机 猫咪饮水机酸奶机",
+      "trackingNo": "KY4001013417978",
+      "logistics": "跨越",
+      "customer": "杭州京东自营",
+      "whQty": 35,
+      "whRow": 14
+    },
+    {
+      "materialCode": "6839AA800243",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light专用滤棉配件替换",
+      "trackingNo": "KY4001013417978",
+      "logistics": "跨越",
+      "customer": "杭州京东自营",
+      "whQty": 20,
+      "whRow": 15
+    },
+    {
+      "materialCode": "6830AA800436",
+      "materialName": "Hiigge嗨吉雪仓喂食器",
+      "trackingNo": "KY4001013417978",
+      "logistics": "跨越",
+      "customer": "杭州京东自营",
+      "whQty": 20,
+      "whRow": 16
+    },
+    {
+      "materialCode": "7601AA800153",
+      "materialName": "滤芯 一盒三片装 通用型",
+      "trackingNo": "KY4001013417978",
+      "logistics": "跨越",
+      "customer": "杭州京东自营",
+      "whQty": 40,
+      "whRow": 17
+    },
+    {
+      "materialCode": "6842AA800048",
+      "materialName": "Hiigge嗨吉雪仓喂食器喂食器干燥盒套装 猫咪喂食器狗狗喂食器",
+      "trackingNo": "KY4001013417978",
+      "logistics": "跨越",
+      "customer": "杭州京东自营",
+      "whQty": 20,
+      "whRow": 18
+    },
+    {
+      "materialCode": "6830AA800534",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light2 智能无线宠物饮水机 猫咪饮水机酸奶机",
+      "trackingNo": "KY4001013417978",
+      "logistics": "跨越",
+      "customer": "杭州京东自营",
+      "whQty": 5,
+      "whRow": 19
+    },
+    {
+      "materialCode": "6830AA800538",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light2 Pro智能无线宠物饮水机 猫咪饮水机酸奶机",
+      "trackingNo": "KY4001013417979",
+      "logistics": "跨越",
+      "customer": "南京京东自营",
+      "whQty": 3,
+      "whRow": 20
+    },
+    {
+      "materialCode": "6839AA800243",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light专用滤棉配件替换",
+      "trackingNo": "KY4001013417979",
+      "logistics": "跨越",
+      "customer": "南京京东自营",
+      "whQty": 15,
+      "whRow": 21
+    },
+    {
+      "materialCode": "6830AA800436",
+      "materialName": "Hiigge嗨吉雪仓喂食器",
+      "trackingNo": "KY4001013417979",
+      "logistics": "跨越",
+      "customer": "南京京东自营",
+      "whQty": 12,
+      "whRow": 22
+    },
+    {
+      "materialCode": "7601AA800153",
+      "materialName": "滤芯 一盒三片装 通用型",
+      "trackingNo": "KY4001013417979",
+      "logistics": "跨越",
+      "customer": "南京京东自营",
+      "whQty": 35,
+      "whRow": 23
+    },
+    {
+      "materialCode": "6842AA800048",
+      "materialName": "Hiigge嗨吉雪仓喂食器喂食器干燥盒套装 猫咪喂食器狗狗喂食器",
+      "trackingNo": "KY4001013417979",
+      "logistics": "跨越",
+      "customer": "南京京东自营",
+      "whQty": 40,
+      "whRow": 24
+    },
+    {
+      "materialCode": "6830AA800362",
+      "materialName": "Hiigge雪顶饮水机Light智能无线宠物饮水机猫咪饮水机狗狗喂水器",
+      "trackingNo": "KY4001013417979",
+      "logistics": "跨越",
+      "customer": "南京京东自营",
+      "whQty": 15,
+      "whRow": 25
+    },
+    {
+      "materialCode": "6830AA800538",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light2 Pro智能无线宠物饮水机 猫咪饮水机酸奶机",
+      "trackingNo": "KY4001013417977",
+      "logistics": "跨越",
+      "customer": "成都京东自营",
+      "whQty": 30,
+      "whRow": 26
+    },
+    {
+      "materialCode": "6839AA800243",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light专用滤棉配件替换",
+      "trackingNo": "KY4001013417977",
+      "logistics": "跨越",
+      "customer": "成都京东自营",
+      "whQty": 10,
+      "whRow": 27
+    },
+    {
+      "materialCode": "6830AA800436",
+      "materialName": "Hiigge嗨吉雪仓喂食器",
+      "trackingNo": "KY4001013417977",
+      "logistics": "跨越",
+      "customer": "成都京东自营",
+      "whQty": 30,
+      "whRow": 28
+    },
+    {
+      "materialCode": "7601AA800153",
+      "materialName": "滤芯 一盒三片装 通用型",
+      "trackingNo": "KY4001013417977",
+      "logistics": "跨越",
+      "customer": "成都京东自营",
+      "whQty": 60,
+      "whRow": 29
+    },
+    {
+      "materialCode": "6842AA800064",
+      "materialName": "Hiigge马氏体不锈钢宠物指甲剪大小体型猫狗兔爪通用指甲钳",
+      "trackingNo": "KY4001013417977",
+      "logistics": "跨越",
+      "customer": "成都京东自营",
+      "whQty": 3,
+      "whRow": 30
+    },
+    {
+      "materialCode": "6842AA800048",
+      "materialName": "Hiigge嗨吉雪仓喂食器喂食器干燥盒套装 猫咪喂食器狗狗喂食器",
+      "trackingNo": "KY4001013417977",
+      "logistics": "跨越",
+      "customer": "成都京东自营",
+      "whQty": 10,
+      "whRow": 31
+    },
+    {
+      "materialCode": "6839AA800251",
+      "materialName": "Hiigge嗨吉宠物湿粮碗木质底座防打翻设计猫碗 猫罐头碗猫碗",
+      "trackingNo": "KY4001013417977",
+      "logistics": "跨越",
+      "customer": "成都京东自营",
+      "whQty": 5,
+      "whRow": 32
+    },
+    {
+      "materialCode": "6830AA800362",
+      "materialName": "Hiigge雪顶饮水机Light智能无线宠物饮水机猫咪饮水机狗狗喂水器",
+      "trackingNo": "KY4001013417977",
+      "logistics": "跨越",
+      "customer": "成都京东自营",
+      "whQty": 10,
+      "whRow": 33
+    },
+    {
+      "materialCode": "6830AA800534",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light2 智能无线宠物饮水机 猫咪饮水机酸奶机",
+      "trackingNo": "KY4001013417977",
+      "logistics": "跨越",
+      "customer": "成都京东自营",
+      "whQty": 2,
+      "whRow": 34
+    },
+    {
+      "materialCode": "6839AA800243",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light专用滤棉配件替换",
+      "trackingNo": "KY4001013417970",
+      "logistics": "跨越",
+      "customer": "武汉京东自营",
+      "whQty": 10,
+      "whRow": 35
+    },
+    {
+      "materialCode": "6830AA800436",
+      "materialName": "Hiigge嗨吉雪仓喂食器",
+      "trackingNo": "KY4001013417970",
+      "logistics": "跨越",
+      "customer": "武汉京东自营",
+      "whQty": 10,
+      "whRow": 36
+    },
+    {
+      "materialCode": "7601AA800153",
+      "materialName": "滤芯 一盒三片装 通用型",
+      "trackingNo": "KY4001013417970",
+      "logistics": "跨越",
+      "customer": "武汉京东自营",
+      "whQty": 40,
+      "whRow": 37
+    },
+    {
+      "materialCode": "6842AA800064",
+      "materialName": "Hiigge马氏体不锈钢宠物指甲剪大小体型猫狗兔爪通用指甲钳",
+      "trackingNo": "KY4001013417970",
+      "logistics": "跨越",
+      "customer": "武汉京东自营",
+      "whQty": 10,
+      "whRow": 38
+    },
+    {
+      "materialCode": "6842AA800046",
+      "materialName": "Hiigge嗨吉雪仓喂食器增高支架套装喂食器增高腿 猫咪喂食器狗狗喂食器",
+      "trackingNo": "KY4001013417970",
+      "logistics": "跨越",
+      "customer": "武汉京东自营",
+      "whQty": 6,
+      "whRow": 39
+    },
+    {
+      "materialCode": "6830AA800362",
+      "materialName": "Hiigge雪顶饮水机Light智能无线宠物饮水机猫咪饮水机狗狗喂水器",
+      "trackingNo": "KY4001013417970",
+      "logistics": "跨越",
+      "customer": "武汉京东自营",
+      "whQty": 8,
+      "whRow": 40
+    },
+    {
+      "materialCode": "6830AA800564",
+      "materialName": "Hiigge嗨吉智能无线猫咪自动喂食器 雪仓Mini白色 宠物自动喂食器",
+      "trackingNo": "KY4001013417970",
+      "logistics": "跨越",
+      "customer": "武汉京东自营",
+      "whQty": 5,
+      "whRow": 41
+    },
+    {
+      "materialCode": "6830AA800538",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light2 Pro智能无线宠物饮水机 猫咪饮水机酸奶机",
+      "trackingNo": "KY4001013417972",
+      "logistics": "跨越",
+      "customer": "沈阳京东自营",
+      "whQty": 10,
+      "whRow": 42
+    },
+    {
+      "materialCode": "6839AA800243",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light专用滤棉配件替换",
+      "trackingNo": "KY4001013417972",
+      "logistics": "跨越",
+      "customer": "沈阳京东自营",
+      "whQty": 20,
+      "whRow": 43
+    },
+    {
+      "materialCode": "7601AA800153",
+      "materialName": "滤芯 一盒三片装 通用型",
+      "trackingNo": "KY4001013417972",
+      "logistics": "跨越",
+      "customer": "沈阳京东自营",
+      "whQty": 5,
+      "whRow": 44
+    },
+    {
+      "materialCode": "6842AA800048",
+      "materialName": "Hiigge嗨吉雪仓喂食器喂食器干燥盒套装 猫咪喂食器狗狗喂食器",
+      "trackingNo": "KY4001013417972",
+      "logistics": "跨越",
+      "customer": "沈阳京东自营",
+      "whQty": 20,
+      "whRow": 45
+    },
+    {
+      "materialCode": "6839AA800251",
+      "materialName": "Hiigge嗨吉宠物湿粮碗木质底座防打翻设计猫碗 猫罐头碗猫碗",
+      "trackingNo": "KY4001013417972",
+      "logistics": "跨越",
+      "customer": "沈阳京东自营",
+      "whQty": 5,
+      "whRow": 46
+    },
+    {
+      "materialCode": "6830AA800534",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light2 智能无线宠物饮水机 猫咪饮水机酸奶机",
+      "trackingNo": "KY4001013417972",
+      "logistics": "跨越",
+      "customer": "沈阳京东自营",
+      "whQty": 5,
+      "whRow": 47
+    },
+    {
+      "materialCode": "6830AA800564",
+      "materialName": "Hiigge嗨吉智能无线猫咪自动喂食器 雪仓Mini白色 宠物自动喂食器",
+      "trackingNo": "KY4001013417972",
+      "logistics": "跨越",
+      "customer": "沈阳京东自营",
+      "whQty": 15,
+      "whRow": 48
+    },
+    {
+      "materialCode": "6830AA800538",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light2 Pro智能无线宠物饮水机 猫咪饮水机酸奶机",
+      "trackingNo": "KY4001013417975",
+      "logistics": "跨越",
+      "customer": "广州京东自营",
+      "whQty": 30,
+      "whRow": 49
+    },
+    {
+      "materialCode": "6839AA800243",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light专用滤棉配件替换",
+      "trackingNo": "KY4001013417975",
+      "logistics": "跨越",
+      "customer": "广州京东自营",
+      "whQty": 50,
+      "whRow": 50
+    },
+    {
+      "materialCode": "6830AA800436",
+      "materialName": "Hiigge嗨吉雪仓喂食器",
+      "trackingNo": "KY4001013417975",
+      "logistics": "跨越",
+      "customer": "广州京东自营",
+      "whQty": 5,
+      "whRow": 51
+    },
+    {
+      "materialCode": "7601AA800153",
+      "materialName": "滤芯 一盒三片装 通用型",
+      "trackingNo": "KY4001013417975",
+      "logistics": "跨越",
+      "customer": "广州京东自营",
+      "whQty": 40,
+      "whRow": 52
+    },
+    {
+      "materialCode": "6842AA800064",
+      "materialName": "Hiigge马氏体不锈钢宠物指甲剪大小体型猫狗兔爪通用指甲钳",
+      "trackingNo": "KY4001013417975",
+      "logistics": "跨越",
+      "customer": "广州京东自营",
+      "whQty": 10,
+      "whRow": 53
+    },
+    {
+      "materialCode": "6839AA800251",
+      "materialName": "Hiigge嗨吉宠物湿粮碗木质底座防打翻设计猫碗 猫罐头碗猫碗",
+      "trackingNo": "KY4001013417975",
+      "logistics": "跨越",
+      "customer": "广州京东自营",
+      "whQty": 20,
+      "whRow": 54
+    },
+    {
+      "materialCode": "6842AA800048",
+      "materialName": "Hiigge嗨吉雪仓喂食器喂食器干燥盒套装 猫咪喂食器狗狗喂食器",
+      "trackingNo": "KY4001013417975",
+      "logistics": "跨越",
+      "customer": "广州京东自营",
+      "whQty": 40,
+      "whRow": 55
+    },
+    {
+      "materialCode": "6830AA800538",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light2 Pro智能无线宠物饮水机 猫咪饮水机酸奶机",
+      "trackingNo": "KY4001013417973",
+      "logistics": "跨越",
+      "customer": "西安京东自营",
+      "whQty": 20,
+      "whRow": 56
+    },
+    {
+      "materialCode": "6839AA800243",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light专用滤棉配件替换",
+      "trackingNo": "KY4001013417973",
+      "logistics": "跨越",
+      "customer": "西安京东自营",
+      "whQty": 20,
+      "whRow": 57
+    },
+    {
+      "materialCode": "7601AA800153",
+      "materialName": "滤芯 一盒三片装 通用型",
+      "trackingNo": "KY4001013417973",
+      "logistics": "跨越",
+      "customer": "西安京东自营",
+      "whQty": 30,
+      "whRow": 58
+    },
+    {
+      "materialCode": "6830AA800538",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light2 Pro智能无线宠物饮水机 猫咪饮水机酸奶机",
+      "trackingNo": "KY4001013417974",
+      "logistics": "跨越",
+      "customer": "德州京东自营",
+      "whQty": 10,
+      "whRow": 59
+    },
+    {
+      "materialCode": "6839AA800243",
+      "materialName": "Hiigge嗨吉雪顶饮水机Light专用滤棉配件替换",
+      "trackingNo": "KY4001013417974",
+      "logistics": "跨越",
+      "customer": "德州京东自营",
+      "whQty": 20,
+      "whRow": 60
+    },
+    {
+      "materialCode": "7601AA800153",
+      "materialName": "滤芯 一盒三片装 通用型",
+      "trackingNo": "KY4001013417974",
+      "logistics": "跨越",
+      "customer": "德州京东自营",
+      "whQty": 30,
+      "whRow": 61
+    },
+    {
+      "materialCode": "6830AA800575",
+      "materialName": "BYC_DR5400_B01 包装整机（黑色）包装料单70mai Dash Cam T800E Set（无SD卡）（海外通用版）",
+      "trackingNo": "SF0228607517783",
+      "logistics": "顺丰",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 1,
+      "whRow": 62
+    },
+    {
+      "materialCode": "6830AA800613",
+      "materialName": "70mai Dash Cam 4K A800SE Set 海外版（通用套装)",
+      "trackingNo": "SF0228607517783",
+      "logistics": "顺丰",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 1,
+      "whRow": 63
+    },
+    {
+      "materialCode": "6830AA800581",
+      "materialName": "0",
+      "trackingNo": "SF0228607517783",
+      "logistics": "顺丰",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 1,
+      "whRow": 64
+    },
+    {
+      "materialCode": "6830AA800671",
+      "materialName": "70迈智能记录仪T800+RC41+256G卡（海外套装_通用版）",
+      "trackingNo": "SF0228607517783",
+      "logistics": "顺丰",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 1,
+      "whRow": 65
+    },
+    {
+      "materialCode": "6830AA800662",
+      "materialName": "70mai Dash Cam 4K A810 Lite Set_套装_海外通用版",
+      "trackingNo": "SF0228607517783",
+      "logistics": "顺丰",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 1,
+      "whRow": 66
+    },
+    {
+      "materialCode": "5350AA800005",
+      "materialName": "70迈行车记录仪专用存储卡 32GB",
+      "trackingNo": "SF0228607517783",
+      "logistics": "顺丰",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 1,
+      "whRow": 67
+    },
+    {
+      "materialCode": "6830AA800196",
+      "materialName": "70迈智能记录仪A500S（海外单机版，realtekWiFi DCDC变更_IC&MIC&法国环保）",
+      "trackingNo": "SF0223437689182",
+      "logistics": "顺丰",
+      "customer": "",
+      "whQty": 10,
+      "whRow": 148
+    },
+    {
+      "materialCode": "4850AA800008",
+      "materialName": "64GSD卡，ANONA定制",
+      "trackingNo": "SF5135726325753",
+      "logistics": "顺丰",
+      "customer": "",
+      "whQty": 100,
+      "whRow": 149
+    },
+    {
+      "materialCode": "4850AA800007",
+      "materialName": "128GSD卡，ANONA定制",
+      "trackingNo": "SF5135726325753",
+      "logistics": "顺丰",
+      "customer": "",
+      "whQty": 100,
+      "whRow": 150
+    },
+    {
+      "materialCode": "4850AA800010",
+      "materialName": "256GSD卡，ANONA定制",
+      "trackingNo": "SF5135726325753",
+      "logistics": "顺丰",
+      "customer": "",
+      "whQty": 50,
+      "whRow": 151
+    },
+    {
+      "materialCode": "4850AA800009",
+      "materialName": "512GSD卡，ANONA定制",
+      "trackingNo": "SF5135726325753",
+      "logistics": "顺丰",
+      "customer": "",
+      "whQty": 50,
+      "whRow": 152
+    },
+    {
+      "materialCode": "6839AA800295",
+      "materialName": "70迈云台记录仪-4G停车监控线（海外欧盟通用版+马来定制）",
+      "trackingNo": "粵L706JH",
+      "logistics": "货拉拉",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 240,
+      "whRow": 154
+    },
+    {
+      "materialCode": "6839AA800238",
+      "materialName": "PS0001,点烟插头转XT30 转接线（独立包装）",
+      "trackingNo": "粵L706JH",
+      "logistics": "货拉拉",
+      "customer": "惠州仓调永惠拼板出港",
+      "whQty": 29,
+      "whRow": 159
+    },
+    {
+      "materialCode": "6839AA800227",
+      "materialName": "70迈停车监控车载电源",
+      "trackingNo": "KY4001005462733",
+      "logistics": "跨越",
+      "customer": "广州京东自营",
+      "whQty": 0,
+      "whRow": 225
+    },
+    {
+      "materialCode": "6830AA800130",
+      "materialName": "普通支架_灰色",
+      "trackingNo": "KY4001015483064",
+      "logistics": "跨越",
+      "customer": "淮南市京迈电子商务有限公司",
+      "whQty": 96,
+      "whRow": 259
+    },
+    {
+      "materialCode": "6830AA800126",
+      "materialName": "70迈智能记录仪M500 4G支架）(灰色)",
+      "trackingNo": "KY4001015483064",
+      "logistics": "跨越",
+      "customer": "淮南市京迈电子商务有限公司",
+      "whQty": 48,
+      "whRow": 260
+    },
+    {
+      "materialCode": "6842AA800048",
+      "materialName": "喂食器干燥剂盒",
+      "trackingNo": "KY4001015483065",
+      "logistics": "跨越",
+      "customer": "青岛智熹云禾电子科技有限公司",
+      "whQty": 100,
+      "whRow": 261
+    },
+    {
+      "materialCode": "7601AA800153",
+      "materialName": "Hiigge宠物智能饮水机Light--滤芯配件",
+      "trackingNo": "KY4001015483065",
+      "logistics": "跨越",
+      "customer": "青岛智熹云禾电子科技有限公司",
+      "whQty": 100,
+      "whRow": 262
+    },
+    {
+      "materialCode": "6830AA800534",
+      "materialName": "Hiigge饮水机Light2_国内版普通版",
+      "trackingNo": "KY4001015483065",
+      "logistics": "跨越",
+      "customer": "青岛智熹云禾电子科技有限公司",
+      "whQty": 15,
+      "whRow": 263
+    },
+    {
+      "materialCode": "6830AA800362",
+      "materialName": "Hiigge宠物智能饮水机Light（国内版）",
+      "trackingNo": "KY4001015483065",
+      "logistics": "跨越",
+      "customer": "青岛智熹云禾电子科技有限公司",
+      "whQty": 10,
+      "whRow": 264
+    },
+    {
+      "materialCode": "6842AA800111",
+      "materialName": "70迈4G监控线（UP04_配件亚定制版_C to C线直头）",
+      "trackingNo": "SF6504129584394",
+      "logistics": "顺丰",
+      "customer": "惠州仓调永惠拼 板出港",
+      "whQty": 12,
+      "whRow": 274
+    },
+    {
+      "materialCode": "6839AA800227",
+      "materialName": "70迈停车监控车载电源",
+      "trackingNo": "KY4001006441551",
+      "logistics": "跨越",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 70,
+      "whRow": 276
+    },
+    {
+      "materialCode": "6839AA800236",
+      "materialName": "汽车保险丝盒取电线",
+      "trackingNo": "KY4001006441551",
+      "logistics": "跨越",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 70,
+      "whRow": 277
+    },
+    {
+      "materialCode": "6839AA800239",
+      "materialName": "保险丝座和保险片",
+      "trackingNo": "KY4001006441551",
+      "logistics": "跨越",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 70,
+      "whRow": 278
+    },
+    {
+      "materialCode": "6839AA800234",
+      "materialName": "USB-C 转 USB-C 转接线",
+      "trackingNo": "KY4001006441551",
+      "logistics": "跨越",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 70,
+      "whRow": 279
+    },
+    {
+      "materialCode": "6830AA800739",
+      "materialName": "70迈4K智能记录仪A810 Pro",
+      "trackingNo": "粤BCD5248",
+      "logistics": "贤顺",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 108,
+      "whRow": 281
+    },
+    {
+      "materialCode": "6830AA800740",
+      "materialName": "70迈智能记录仪A400 Pro 4K",
+      "trackingNo": "粤BCD5248",
+      "logistics": "贤顺",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 240,
+      "whRow": 288
+    },
+    {
+      "materialCode": "6830AA800429",
+      "materialName": "70迈后录摄像头(RC11)",
+      "trackingNo": "粤BCD5248",
+      "logistics": "贤顺",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 120,
+      "whRow": 290
+    },
+    {
+      "materialCode": "6830AA800405",
+      "materialName": "70迈智能记录仪A510单机版",
+      "trackingNo": "粤BCD5248",
+      "logistics": "贤顺",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 24,
+      "whRow": 292
+    },
+    {
+      "materialCode": "6842AA800112",
+      "materialName": "70迈4G停车监控线",
+      "trackingNo": "粤BCD5248",
+      "logistics": "贤顺",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 60,
+      "whRow": 296
+    },
+    {
+      "materialCode": "6839AA800227",
+      "materialName": "70迈停车监控车载电源",
+      "trackingNo": "粤BCD5248",
+      "logistics": "贤顺",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 60,
+      "whRow": 297
+    },
+    {
+      "materialCode": "6839AA800234",
+      "materialName": "USB-C 转 USB-C 转接线",
+      "trackingNo": "粤BCD5248",
+      "logistics": "贤顺",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 60,
+      "whRow": 298
+    },
+    {
+      "materialCode": "7601AA800153",
+      "materialName": "Hiigge宠物智能饮水机Light--滤芯配件",
+      "trackingNo": "粤BCD5248",
+      "logistics": "贤顺",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 300,
+      "whRow": 299
+    },
+    {
+      "materialCode": "6830AA800436",
+      "materialName": "Hiigge雪仓宠物智能喂食器",
+      "trackingNo": "粤BCD5248",
+      "logistics": "贤顺",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 50,
+      "whRow": 300
+    },
+    {
+      "materialCode": "6830AA800564",
+      "materialName": "雪仓宠物智能喂食器 Mini_白色碗_国内版）01",
+      "trackingNo": "粤BCD5248",
+      "logistics": "贤顺",
+      "customer": "山西新亿航科技有限公司",
+      "whQty": 50,
+      "whRow": 301
+    },
+    {
+      "materialCode": "6830AA800458",
+      "materialName": "70迈智能记录仪A410+后录RC21(自研)（套装版 海外通用）",
+      "trackingNo": "KY4001096476357",
+      "logistics": "跨越",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 10,
+      "whRow": 303
+    },
+    {
+      "materialCode": "6830AA800549",
+      "materialName": "BYC_DR1400_B01,包装整机_70mai Dash Cam M310 Plus 2K（海外版）",
+      "trackingNo": "KY4001096476357",
+      "logistics": "跨越",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 10,
+      "whRow": 304
+    },
+    {
+      "materialCode": "5350AA800006",
+      "materialName": "70迈行车记录仪专用存储卡 64GB",
+      "trackingNo": "KY4001078481513",
+      "logistics": "跨越",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 100,
+      "whRow": 307
+    },
+    {
+      "materialCode": "5350AA800007",
+      "materialName": "70迈行车记录仪专用存储卡 128GB",
+      "trackingNo": "KY4001078481513",
+      "logistics": "跨越",
+      "customer": "深圳市朗华供应链服务有限公司",
+      "whQty": 100,
+      "whRow": 308
+    }
+  ],
+  "unmatchedNC": [
+    {
+      "materialCode": "",
+      "materialName": "",
+      "trackingNo": "",
+      "customer": "",
+      "ncQty": "19,082.00",
+      "ncRow": 184,
+      "docNo": ""
+    }
+  ]
+}

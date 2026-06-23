@@ -1,0 +1,24 @@
+{
+  "email": "chuhuocang@70mai.com",
+  "password": "ZhcRJqGtbP3AjqNp",
+  "imap": {
+    "host": "imap.exmail.qq.com",
+    "port": 993,
+    "tls": true
+  },
+  "smtp": {
+    "host": "smtp.exmail.qq.com",
+    "port": 465,
+    "secure": true
+  },
+  "senders": [
+    {"name":"马运水","email":"mayunshui@70mai.com"},
+    {"name":"苏晓霞","email":"suxiaoxia@70mai.com"},
+    {"name":"曾薇","email":""},
+    {"name":"丁颖","email":"dingying@70mai.com"}
+  ],
+  "warehouseSheetUrl": "https://qau2vw8p0n.feishu.cn/sheets/H86Usi0Y7hRHkit3VhycqGlknXd",
+  "warehouseSheetName": "6月仓库渠道数据",
+  "draftMode": true,
+  "pollIntervalMinutes": 10
+}

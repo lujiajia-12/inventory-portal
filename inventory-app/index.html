@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>仓库盘点</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- html5-qrcode for barcode scanning -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- ===== 头部 ===== -->
+    <header class="app-header">
+      <h1>📦 仓库盘点</h1>
+      <div class="header-stats">
+        <span id="statTotal">合计: 0</span>
+        <span id="statCounted">已盘: 0</span>
+        <span id="statRemaining">剩余: 0</span>
+      </div>
+    </header>
+
+    <!-- ===== Tab 切换 ===== -->
+    <nav class="tab-bar">
+      <button class="tab-btn active" data-tab="code">物料编码</button>
+      <button class="tab-btn" data-tab="name">商品名称</button>
+      <button class="tab-btn" data-tab="scan">📷 扫码</button>
+    </nav>
+
+    <!-- ===== 搜索区域 ===== -->
+    <section class="search-section" id="searchSection">
+      <!-- 物料编码搜索 -->
+      <div class="search-panel active" id="panel-code">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="inputCode" placeholder="输入物料编码后4位..." autocomplete="off" inputmode="numeric">
+          <button class="btn-clear hidden" id="btnClearCode">✕</button>
+        </div>
+        <p class="search-hint">输入物料编码最后4位数字即可查找</p>
+      </div>
+
+      <!-- 商品名称搜索 -->
+      <div class="search-panel" id="panel-name">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="inputName" placeholder="输入商品名称关键词..." autocomplete="off">
+          <button class="btn-clear hidden" id="btnClearName">✕</button>
+        </div>
+        <p class="search-hint">支持模糊搜索，输入商品名称包含的关键词</p>
+      </div>
+
+      <!-- 扫码区域 -->
+      <div class="search-panel" id="panel-scan">
+        <div id="scannerContainer">
+          <div id="reader"></div>
+        </div>
+        <div id="scanPlaceholder" class="scan-placeholder">
+          <div class="scan-icon">📷</div>
+          <p>点击下方按钮启动扫码</p>
+          <p class="scan-hint">对准商品69码（EAN-13条形码）</p>
+        </div>
+        <div class="scan-controls">
+          <button class="btn btn-primary" id="btnStartScan">启动扫码</button>
+          <button class="btn btn-outline hidden" id="btnStopScan">停止扫码</button>
+        </div>
+        <div id="scanResult" class="scan-result hidden"></div>
+      </div>
+    </section>
+
+    <!-- ===== 搜索结果列表 ===== -->
+    <section class="results-section hidden" id="resultsSection">
+      <div class="results-header">
+        <h2>搜索结果</h2>
+        <span class="results-count" id="resultsCount"></span>
+        <button class="btn-back-search" id="btnBackToSearch">← 返回搜索</button>
+      </div>
+      <div class="results-list" id="resultsList"></div>
+      <div class="results-empty hidden" id="resultsEmpty">
+        <p>😕 未找到匹配的商品</p>
+        <p class="hint">请尝试其他关键词或物料编码</p>
+      </div>
+    </section>
+
+    <!-- ===== 盘点明细 ===== -->
+    <section class="detail-section hidden" id="detailSection">
+      <div class="detail-header">
+        <button class="btn-back" id="btnBackToResults">← 返回</button>
+        <h2>盘点明细</h2>
+      </div>
+
+      <div class="detail-card" id="detailCard">
+        <!-- 动态填充 -->
+      </div>
+
+      <div class="detail-form">
+        <div class="form-group">
+          <label for="inputPrepArea">备货区数量</label>
+          <div class="input-with-unit">
+            <input type="number" id="inputPrepArea" placeholder="请输入备货区盘点数量" min="0" step="1" inputmode="numeric">
+            <span class="unit">件/箱</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputStorageArea">库存区数量</label>
+          <div class="input-with-unit">
+            <input type="number" id="inputStorageArea" placeholder="请输入库存区盘点数量" min="0" step="1" inputmode="numeric">
+            <span class="unit">件/箱</span>
+          </div>
+        </div>
+
+        <div class="form-summary">
+          <div class="summary-row">
+            <span>在库数量</span>
+            <span id="summaryStock">-</span>
+          </div>
+          <div class="summary-row">
+            <span>盘点合计</span>
+            <span id="summaryTotal">-</span>
+          </div>
+          <div class="summary-row" id="summaryDiffRow">
+            <span>差异</span>
+            <span id="summaryDiff">-</span>
+          </div>
+        </div>
+
+        <button class="btn btn-submit" id="btnSubmit">
+          ✓ 一键提交，盘下一个
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== 完成提示 ===== -->
+    <section class="complete-section hidden" id="completeSection">
+      <div class="complete-card">
+        <div class="complete-icon">🎉</div>
+        <h2>全部盘点完毕！</h2>
+        <p id="completeSummary"></p>
+        <div class="complete-actions">
+          <button class="btn btn-primary" id="btnExport">📥 导出盘点结果</button>
+          <button class="btn btn-outline" id="btnReset">🔄 重新盘点</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Toast 提示 ===== -->
+    <div class="toast hidden" id="toast"></div>
+  </div>
+
+  <!-- ===== JavaScript 模块 ===== -->
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/scanner.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

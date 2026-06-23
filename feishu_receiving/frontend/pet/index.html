@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宠物TC退货收货窗口</title>
+  <link rel="stylesheet" href="/pet/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <h1>🐱 宠物TC退货收货窗口</h1>
+    <span class="version">v1.0</span>
+  </header>
+
+  <div class="scan-area">
+    <label class="scan-label" for="scanInput">🔍 扫描或输入运单号</label>
+    <input type="text" id="scanInput" class="scan-input" placeholder="扫码枪扫描运单号，或手动输入后按回车..." autofocus autocomplete="off">
+    <div class="scan-hint">扫描后自动查询 · 按回车搜索 · 点击页面任意处恢复聚焦</div>
+  </div>
+
+  <div id="resultsContainer" class="results-container hidden">
+    <div class="package-bar">
+      <span class="package-tracking">📋 <strong id="pkgTracking"></strong></span>
+      <span class="package-count">共 <strong id="pkgCount"></strong> 件</span>
+      <span id="pkgStatus" class="package-status"></span>
+      <button id="btnBulkConfirm" class="btn btn-success btn-bulk" onclick="App.bulkConfirm()">⏎ 一键确认全部收货</button>
+    </div>
+    <div id="itemCards" class="item-cards"></div>
+  </div>
+
+  <div id="emptyState" class="empty-state">
+    <div class="empty-icon">📭</div>
+    <div class="empty-title">扫描或输入运单号开始收货</div>
+    <div class="empty-desc">扫码枪扫描条码后自动查询，支持 Enter 触发搜索</div>
+  </div>
+
+  <div id="loadingState" class="loading-state hidden">
+    <div class="spinner"></div><div>正在查询...</div>
+  </div>
+  <div id="errorState" class="error-state hidden">
+    <div id="errorMessage" class="error-message"></div>
+  </div>
+
+  <div id="discModal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-title">📝 差异备注</div>
+      <textarea id="discNote" class="modal-textarea" placeholder="请描述差异详情..." rows="3"></textarea>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="App.closeDiscModal()">取消</button>
+        <button class="btn btn-danger" id="btnSubmitDisc">提交异常</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="activity-log" id="activityLog">
+    <div class="activity-title">📜 最近操作</div>
+    <div id="activityList" class="activity-list"><div class="activity-empty">暂无操作记录</div></div>
+  </footer>
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/pet/js/api.js"></script>
+  <script src="/pet/js/scanner.js"></script>
+  <script src="/pet/js/ui.js"></script>
+  <script src="/pet/js/state.js"></script>
+  <script src="/pet/js/app.js"></script>
+</body>
+</html>

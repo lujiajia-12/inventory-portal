@@ -1,0 +1,62 @@
+{
+  "app": {
+    "app_id": "cli_aaa97390aff85cbd",
+    "app_secret": "由 lark-cli keychain 管理",
+    "auth_mode": "user"
+  },
+  "monitored_groups": [
+    {
+      "chat_id": "oc_e70d00c9832a595c1b7089b096328d5d",
+      "name": "仓库发货群",
+      "send_reports": true
+    },
+    {
+      "chat_id": "oc_a363959d12f52e84bd8fd4f445409710",
+      "name": "惠州审单群",
+      "send_reports": true
+    }
+  ],
+  "poll_interval_minutes": 5,
+  "question_detection": {
+    "min_score": 30,
+    "weights": {
+      "question_mark": 30,
+      "zh_keyword": 30,
+      "en_keyword": 15,
+      "context_pattern": 15
+    },
+    "question_keywords_zh": ["怎么","如何","为什么","什么","哪","谁","什么时候","多少","吗","呢","吧","是不是","有没有","能不能","可不可以","请问"],
+    "question_keywords_en": ["how","why","what","where","when","who","which","can","could","would"],
+    "context_patterns": ["帮我看下","查一下","确认","看一下","麻烦","请问","帮我查","帮忙看","核实","帮我确认"],
+    "keyword_boost": {
+      "发货": 2.0, "物流": 2.0, "仓库": 2.0,
+      "订单": 1.5, "快递": 1.5, "地址": 1.5,
+      "退货": 1.5, "物料": 1.5, "编码": 1.5,
+      "单号": 1.5, "运费": 1.5, "客户": 1.3,
+      "签收": 1.3, "回单": 1.3, "发票": 1.3,
+      "审单": 2.0, "审核": 1.5, "异常": 1.5,
+      "拦截": 1.5, "驳回": 1.5, "备注": 1.3
+    },
+    "stopwords": ["的","了","是","我","你","他","她","它","们","在","有","和","就","不","人","都","一","一个","上","也","很","到","说","要","去","会","可以","这个","那个","还是","没有","知道","已经","因为","所以","但是","如果","虽然","而且","然后","吧","啊","哦","嗯","呢","哈"]
+  },
+  "clustering": {
+    "similarity_threshold": 0.33,
+    "run_interval_minutes": 60,
+    "min_cluster_size_for_report": 2,
+    "synonyms": {
+      "物流": ["快递", "运输", "配送"],
+      "单号": ["运单号", "快递号", "追踪号"],
+      "订单": ["运单", "工单"],
+      "发货": ["发出", "寄出", "送出"],
+      "地址": ["地点", "位置"],
+      "退货": ["退换", "换货", "退款"],
+      "修改": ["更改", "变更", "调整"],
+      "查询": ["查看", "查找", "搜索"]
+    }
+  },
+  "report_schedule": {
+    "daily": { "enabled": true, "time": "18:00", "top_n": 5 },
+    "weekly": { "enabled": true, "day": 5, "time": "17:00", "top_n": 10 }
+  },
+  "data_retention_days": 90
+}

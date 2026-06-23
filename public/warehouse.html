@@ -1,0 +1,162 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>库存上传</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1f2937;min-height:100vh}.header{background:linear-gradient(135deg,#1666f7,#0d4fcc);color:#fff;padding:20px 24px;display:flex;align-items:center;gap:12px}.header a{color:#fff;text-decoration:none;font-size:20px}.header h1{font-size:18px}.header span{opacity:.8;font-size:12px}.container{max-width:900px;margin:0 auto;padding:20px}.card{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.08)}.card h2{font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:8px}.step{background:#1666f7;color:#fff;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}.btn{padding:10px 20px;border-radius:8px;border:none;font-size:14px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:6px;transition:.2s}.btn-primary{background:#1666f7;color:#fff}.btn-primary:hover{background:#0d4fcc}.btn-outline{background:#fff;color:#1666f7;border:1px solid #1666f7}.btn-success{background:#10b981;color:#fff}.btn-success:hover{background:#059669}.btn-success:disabled{background:#9ca3af;cursor:not-allowed}input[type=text],input[type=password]{padding:10px 14px;border-radius:8px;border:1px solid #d1d5db;font-size:14px;width:100%;max-width:250px;outline:none}input:focus{border-color:#1666f7}.dropzone{border:2px dashed #d1d5db;border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:.2s;background:#fafbfc}.dropzone:hover,.dropzone.active{border-color:#1666f7;background:#eef4ff}.dropzone .icon{font-size:36px;margin-bottom:8px}.dropzone .hint{color:#6b7280;font-size:12px;margin-top:6px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#f9fafb;padding:8px 10px;text-align:left;font-weight:600;color:#4b5563;border-bottom:2px solid #e5e7eb}td{padding:7px 10px;border-bottom:1px solid #f3f4f6}.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}.tag-green{background:#d1fae5;color:#065f46}.tag-red{background:#fee2e2;color:#991b1b}.stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}.stat{background:#f9fafb;border-radius:8px;padding:10px 18px;text-align:center}.stat .num{font-size:22px;font-weight:700;color:#1666f7}.stat .label{font-size:11px;color:#6b7280}.result{padding:12px 16px;border-radius:8px;font-size:14px;margin-top:14px;display:none}.result.show{display:block;animation:fadeIn .3s}.result.ok{background:#d1fae5;color:#065f46}.result.err{background:#fee2e2;color:#991b1b}@keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}.loading{display:none;text-align:center;padding:16px}.loading.show{display:block}.spinner{border:3px solid #e5e7eb;border-top:3px solid #1666f7;border-radius:50%;width:28px;height:28px;animation:spin .8s linear infinite;margin:0 auto 10px}@keyframes spin{to{transform:rotate(360deg)}}.preview-scroll{max-height:350px;overflow:auto;border:1px solid #e5e7eb;border-radius:8px}.hidden{display:none}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.history-item{font-size:13px;padding:8px 0;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center}.history-item .time{color:#6b7280;font-size:12px}</style></head><body>
+
+<div class="header"><a href="/">←</a><div><h1 id="whTitle">加载中...</h1><span id="whInfo"></span></div></div>
+<div class="container">
+
+<div class="card" id="cardLogin"><h2>🔐 请输入访问码</h2>
+<div class="row"><input type="password" id="accessCode" placeholder="访问码" maxlength="20"><button class="btn btn-primary" onclick="doLogin()">确认</button></div>
+<div id="loginError" style="color:#ef4444;font-size:13px;margin-top:8px;display:none"></div></div>
+
+<div id="mainContent" class="hidden">
+
+<div class="card"><h2><span class="step">1</span> 下载模板</h2>
+<button class="btn btn-outline" onclick="downloadTemplate()">📥 下载 CSV 模板</button>
+<div style="font-size:12px;color:#6b7280;margin-top:8px">用 Excel 打开模板 → 填入库存数据 → 保存后上传</div></div>
+
+<div class="card"><h2><span class="step">2</span> 上传文件</h2>
+<div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+<div class="icon">📂</div><div>拖拽文件到此处，或点击选择</div>
+<div class="hint">支持 .csv / .xlsx</div><input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="display:none"></div>
+<div id="fileName" style="margin-top:8px;color:#1666f7;font-weight:500;display:none"></div>
+<div style="margin-top:8px"><span style="font-size:13px;color:#6b7280">上传人:</span>
+<input type="text" id="uploader" placeholder="您的姓名" style="max-width:160px;padding:6px 10px;font-size:13px"></div></div>
+
+<div class="loading" id="loading"><div class="spinner"></div><div>处理中...</div></div>
+<div class="result" id="result"></div>
+
+<div class="card hidden" id="previewCard"><h2><span class="step">3</span> 数据预览</h2>
+<div class="stats" id="stats"></div><div class="preview-scroll"><table id="previewTable"></table></div></div>
+
+<div class="card hidden" id="uploadCard"><h2><span class="step">4</span> 确认上传</h2>
+<button class="btn btn-success" onclick="doUpload()" id="btnUpload">🚀 批量上传</button></div>
+
+<div class="card"><h2>📋 近期上传记录</h2><div id="historyList" style="color:#9ca3af;font-size:13px">加载中...</div></div>
+
+</div></div>
+
+<script>
+const WH_KEY = decodeURIComponent(location.pathname.slice(1));
+let WH_NAME = WH_KEY, previewData = [], selectedFile = null;
+
+(async()=>{
+  if(!WH_KEY){location.href='/';return;}
+  try{
+    const d=await(await fetch('/api/warehouses')).json();
+    const wh=d.warehouses.find(w=>w.key===WH_KEY||w.name===WH_KEY);
+    if(!wh){location.href='/';return;}
+    WH_NAME=wh.name;
+    document.getElementById('whTitle').textContent=wh.name;
+    document.getElementById('whInfo').textContent=`联系人: ${wh.contact} | 字段: ${wh.fields.join(' / ')}${wh.supplier?' | 按供应商筛选':''}`;
+    if(!wh.hasCode){document.getElementById('cardLogin').classList.add('hidden');document.getElementById('mainContent').classList.remove('hidden');loadHistory();}
+  }catch(e){}
+})();
+
+async function doLogin(){
+  const code=document.getElementById('accessCode').value;
+  try{
+    const d=await(await fetch('/api/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({warehouse:WH_KEY,code})})).json();
+    if(d.ok){document.getElementById('cardLogin').classList.add('hidden');document.getElementById('mainContent').classList.remove('hidden');loadHistory();}
+    else{document.getElementById('loginError').style.display='block';document.getElementById('loginError').textContent=d.error;}
+  }catch(e){}
+}
+
+async function loadHistory(){
+  try{
+    const d=await(await fetch('/api/history?warehouse='+encodeURIComponent(WH_NAME))).json();
+    let h='';
+    (d.history||[]).forEach(r=>{
+      h+=`<div class="history-item"><div><b>${r.time||''}</b> ${r.uploader} ${r.filename}</div><div>${r.total}条 ✅${r.success} ⚠️${r.failed}</div></div>`;
+    });
+    document.getElementById('historyList').innerHTML=h||'暂无记录';
+  }catch(e){}
+}
+
+function downloadTemplate(){
+  window.open('/api/template?warehouse='+encodeURIComponent(WH_KEY),'_blank');
+}
+
+const dz=document.getElementById('dropzone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('active')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('active'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('active');const f=e.dataTransfer.files[0];if(f)handleFile(f)});
+document.getElementById('fileInput').addEventListener('change',function(){if(this.files[0])handleFile(this.files[0])});
+
+function handleFile(file){
+  if(!file.name.endsWith('.csv')&&!file.name.endsWith('.xlsx')&&!file.name.endsWith('.xls')){alert('仅支持 CSV / Excel');return}
+  selectedFile=file;
+  document.getElementById('fileName').style.display='block';
+  document.getElementById('fileName').textContent='✅ '+file.name;
+  doPreview();
+}
+
+async function doPreview(){
+  if(!selectedFile)return;
+  const form=new FormData();form.append('file',selectedFile);form.append('warehouse',WH_KEY);
+  const loading=document.getElementById('loading');
+  loading.querySelector('div:last-child').textContent='正在解析数据，请稍候...';
+  loading.classList.add('show');
+  try{
+    const d=await(await fetch('/api/preview',{method:'POST',body:form})).json();
+    loading.classList.remove('show');
+    if(!d.ok){alert(d.error);return}
+    previewData=d.rows;
+    document.getElementById('stats').innerHTML=`
+      <div class="stat"><div class="num">${d.total}</div><div class="label">总记录</div></div>
+      <div class="stat"><div class="num" style="color:#10b981">${d.matched}</div><div class="label">✅ 已匹配（总表有此料号）</div></div>
+      <div class="stat"><div class="num" style="color:#ef4444">${d.unmatched}</div><div class="label">⚠️ 子新增料号（总表无此料号）</div></div>`;
+    let th='<thead><tr><th>#</th>';
+    const headers=d.headers||['商品名称','料号','可用库存','分类'];
+    headers.forEach(h=>th+=`<th>${h}</th>`);
+    th+='<th>状态</th></tr></thead><tbody>';
+    d.rows.forEach((r,i)=>{
+      th+='<tr><td>'+(i+1)+'</td>';
+      if(r.values&&r.values.length>=headers.length){r.values.forEach(v=>th+='<td>'+esc(v)+'</td>');}
+      else{th+='<td>'+esc(r.name)+'</td><td>'+esc(r.code)+'</td><td>'+r.stock+'</td><td>'+esc(r.category)+'</td>';}
+      th+='<td>'+ (r.matched?'<span class="tag tag-green">✅ 已匹配</span>':'<span class="tag tag-red">⚠ 子新增料号</span>') +'</td></tr>';
+    });
+    th+='</tbody>';
+    document.getElementById('previewTable').innerHTML=th;
+    document.getElementById('previewCard').classList.remove('hidden');
+    document.getElementById('uploadCard').classList.remove('hidden');
+  }catch(e){loading.classList.remove('show');alert('预览失败: '+e.message)}
+}
+
+async function doUpload(){
+  if(!previewData.length){alert('无数据');return}
+  const btn=document.getElementById('btnUpload');btn.disabled=true;
+  const loading=document.getElementById('loading');
+  loading.querySelector('div:last-child').textContent='数据上传中，请稍候...';
+  loading.classList.add('show');
+  try{
+    const d=await(await fetch('/api/upload',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({warehouse:WH_KEY,rows:previewData,uploader:document.getElementById('uploader').value||'未知',filename:selectedFile?selectedFile.name:''})
+    })).json();
+    loading.classList.remove('show');
+    const r=document.getElementById('result');
+    if(d.ok){
+      r.className='result show ok';
+      r.innerHTML=`✅ 上传成功！`+(d.supplier?`<br>🏭 供应商: <b>${d.supplier}</b>`:'')+`<br>🗑 清除旧数据 <b>${d.cleared}</b> 条<br>📥 写入新数据 <b>${d.created}</b> 条`+(d.failed>0?`<br>⚠️ 失败 <b>${d.failed}</b> 条`:'')+`<br>📋 已自动重置，可直接拖入文件继续上传`;
+      loadHistory(); resetForm(); setTimeout(()=>r.classList.remove('show'),5000);
+    }else{
+      r.className='result show err'; r.textContent='❌ '+d.error;
+    }
+  }catch(e){
+    loading.classList.remove('show');
+    const r=document.getElementById('result');
+    r.className='result show err'; r.textContent='请求失败: '+e.message;
+  }finally{btn.disabled=false}
+}
+
+function resetForm(){
+  selectedFile=null;previewData=[];
+  document.getElementById('fileInput').value='';
+  document.getElementById('fileName').style.display='none';
+  document.getElementById('previewCard').classList.add('hidden');
+  document.getElementById('uploadCard').classList.add('hidden');
+  document.getElementById('result').classList.remove('show');
+}
+
+function esc(s){return(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+</script></body></html>

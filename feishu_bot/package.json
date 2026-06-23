@@ -1,0 +1,14 @@
+{
+  "name": "feishu-qa-monitor-bot",
+  "version": "1.0.0",
+  "description": "飞书群聊高频问题监控汇总机器人",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js --watch",
+    "once": "node index.js --once",
+    "report": "node index.js --report-now"
+  },
+  "dependencies": {
+    "node-cron": "^3.0.3"
+  }
+}

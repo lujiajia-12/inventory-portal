@@ -1,0 +1,21 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>库存录入系统</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1f2937;min-height:100vh}.header{background:linear-gradient(135deg,#1666f7,#0d4fcc);color:#fff;padding:24px 32px;text-align:center}.header h1{font-size:24px;margin-bottom:4px}.header p{opacity:.8;font-size:14px}.container{max-width:700px;margin:32px auto;padding:0 16px}.card{background:#fff;border-radius:12px;padding:24px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:pointer;transition:.2s;display:flex;align-items:center;gap:16px;text-decoration:none;color:inherit}.card:hover{box-shadow:0 4px 12px rgba(0,0,0,.12);transform:translateY(-2px)}.card .icon{font-size:32px;flex-shrink:0}.card .info{flex:1}.card .info h3{font-size:16px;margin-bottom:4px}.card .info p{font-size:13px;color:#6b7280}.card .arrow{font-size:20px;color:#d1d5db}.footer{text-align:center;color:#9ca3af;font-size:13px;margin-top:32px;padding:16px}</style></head><body>
+<div class="header"><h1>📦 库存录入系统</h1><p>选择您的仓库进入上传页面</p></div>
+<div class="container" id="list"><div style="text-align:center;padding:40px;color:#9ca3af">加载中...</div></div>
+<div class="footer">库存总表实时汇总 &nbsp;|&nbsp; 操作全留痕 &nbsp;|&nbsp; 联系管理员: 段慧琴</div>
+<script>
+(async()=>{
+  try{
+    const d=await(await fetch('/api/warehouses')).json();
+    let h='';
+    d.warehouses.forEach(w=>{
+      h+=`<a class="card" href="/${w.key}">
+        <div class="icon">${w.supplier?'🏪':'🏭'}</div>
+        <div class="info"><h3>${w.name}</h3><p>字段: ${w.fields.join(' / ')} &nbsp;|&nbsp; 联系人: ${w.contact} ${w.supplier?'| 按供应商筛选':''}</p></div>
+        <div class="arrow">→</div>
+      </a>`;
+    });
+    document.getElementById('list').innerHTML=h;
+  }catch(e){document.getElementById('list').innerHTML='<div style="text-align:center;padding:40px;color:#ef4444">加载失败，请刷新重试</div>';}
+})();
+</script></body></html>
