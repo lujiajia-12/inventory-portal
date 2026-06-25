@@ -25,12 +25,12 @@ router.post('/', async (req, res, next) => {
       });
     }
 
-    const result = feishu.markDiscrepancy(recordId, flags, note || '');
+    const result = await feishu.markDiscrepancy(recordId, flags, note || '');
 
     // Write log
     const tn = req.body.trackingNumber || '';
     const reasons = Object.keys(flags).filter(k => flags[k]).join('/');
-    feishu.writeLog(tn, '标记异常', 1, reasons);
+    await feishu.writeLog(tn, '标记异常', 1, reasons);
 
     res.json({ ok: true, data: result });
   } catch (e) {

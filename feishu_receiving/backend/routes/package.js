@@ -17,7 +17,7 @@ router.get('/:trackingNumber', async (req, res, next) => {
       });
     }
 
-    const items = feishu.searchByTracking(trackingNumber.trim());
+    const items = await feishu.searchByTracking(trackingNumber.trim());
 
     if (!items || items.length === 0) {
       return res.status(404).json({

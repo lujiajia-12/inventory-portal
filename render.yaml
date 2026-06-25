@@ -3,7 +3,16 @@ services:
     name: inventory-portal
     runtime: node
     buildCommand: npm install
-    startCommand: node inventory_portal.js
+    startCommand: npm start
+    envVars:
+      - key: FEISHU_APP_SECRET
+        sync: false
+
+  - type: web
+    name: feishu-receiving
+    runtime: node
+    buildCommand: npm install && cd feishu_receiving/backend && npm install
+    startCommand: cd feishu_receiving/backend && npm start
     envVars:
       - key: FEISHU_APP_SECRET
         sync: false

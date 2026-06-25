@@ -1,100 +1,218 @@
 /**
- * Pet TC — reuses feishu.js operations but with pet-specific table/fields.
+ * Pet TC — direct REST API calls (same pattern as feishu.js).
+ * Reuses the same auth flow, just different table/field config.
  */
-const { execSync } = require('child_process');
-const fs = require('fs');
+const https = require('https');
+const path = require('path');
 const cfg = require('./pet-config');
 
-const LARK_CLI = 'lark-cli';
+require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 
-function esc(s) { return String(s||'').replace(/\\/g,'\\\\').replace(/"/g,'\\"'); }
+const FEISHU_APP_ID = process.env.FEISHU_APP_ID || '';
+const FEISHU_APP_SECRET = process.env.FEISHU_APP_SECRET || '';
 
-function run(cmd) {
-  const fullCmd = `${LARK_CLI} ${cmd} --as user --format json`;
-  const stdout = execSync(fullCmd, { encoding:'utf-8', timeout:30000, maxBuffer:10*1024*1024 });
-  const jsonStart = stdout.indexOf('{');
-  const r = JSON.parse(stdout.slice(jsonStart));
-  if (!r.ok) throw new Error(r.error?.message||'CLI error');
-  return r.data;
-}
+// ============ Token Management ============
 
-function runWithFile(cmdPrefix, jsonObj) {
-  const f = `_ptmp_${Date.now()}.json`;
-  try { fs.writeFileSync(f, JSON.stringify(jsonObj), 'utf-8'); return run(`${cmdPrefix} --json @${f}`); }
-  finally { try{fs.unlinkSync(f)}catch(_){} }
-}
+let cachedToken = null, tokenExpireAt = 0;
 
-function val(v) {
-  if (v===null||v===undefined) return '';
-  if (Array.isArray(v)) return v.length>0?String(v[0]):'';
-  if (typeof v==='boolean') return v;
-  return String(v);
-}
-
-// Cache field map
-let _fieldMap = null;
-function getFieldMap() {
-  if (_fieldMap) return _fieldMap;
-  const data = run(`base +field-list --base-token ${cfg.baseToken} --table-id ${cfg.tableId}`);
-  _fieldMap = {};
-  for (const f of (data.fields||data||[])) { _fieldMap[f.id]=f.name; _fieldMap[f.name]=f.id; }
-  return _fieldMap;
-}
-
-function searchByTracking(trackingNumber) {
-  const data = run(`base +record-search --base-token ${cfg.baseToken} --table-id ${cfg.tableId} --keyword "${esc(trackingNumber)}" --search-field ${cfg.fields.trackingNumber} --limit 200`);
-  const rows = data.data||[], fids = data.field_id_list||[], rids = data.record_id_list||[];
-  const map = getFieldMap();
-  const idxToName = fids.map(f=>map[f]||f);
-  return rows.map((row,i)=>{
-    const item = { recordId: rids[i]||'' };
-    for(let j=0;j<row.length&&j<idxToName.length;j++) {
-      let v = row[j];
-      if (Array.isArray(v)) v = v.length>0?String(v[0]):'';
-      if (v===null||v===undefined) v = ['收货确认','少件','错件','破损','空包'].includes(idxToName[j]) ? false : '';
-      item[idxToName[j]] = v;
-    }
-    return item;
+function getToken() {
+  if (cachedToken && Date.now() < tokenExpireAt) return Promise.resolve(cachedToken);
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify({ app_id: FEISHU_APP_ID, app_secret: FEISHU_APP_SECRET });
+    const req = https.request({
+      hostname: 'open.feishu.cn',
+      path: '/open-apis/auth/v3/tenant_access_token/internal',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    }, (res) => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => {
+        try {
+          const j = JSON.parse(data);
+          if (j.code === 0) {
+            cachedToken = j.tenant_access_token;
+            tokenExpireAt = Date.now() + (j.expire - 300) * 1000;
+            resolve(cachedToken);
+          } else {
+            reject(new Error(`Token error: ${j.msg || data}`));
+          }
+        } catch (e) { reject(e); }
+      });
+    });
+    req.on('error', reject);
+    req.write(body);
+    req.end();
   });
 }
 
-function batchConfirmReceive(recordIds) {
-  const now = new Date().toISOString().replace('T',' ').substring(0,16);
-  let updated=0;
-  for(const rid of recordIds) {
-    try {
-      const fields = {
-        [cfg.fields.receiveConfirm]: true,
-        [cfg.fields.receiveStatus]: '收货正常',
-        [cfg.fields.receiveTime]: now,
-      };
-      runWithFile(`base +record-upsert --base-token ${cfg.baseToken} --table-id ${cfg.tableId} --record-id "${esc(rid)}"`, fields);
-      updated++;
-    } catch(e) { console.error(`Pet update fail ${rid}: ${e.message}`); }
+function api(method, apiPath, body) {
+  return getToken().then(token => new Promise((resolve, reject) => {
+    const opts = {
+      hostname: 'open.feishu.cn',
+      path: apiPath,
+      method,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+    const req = https.request(opts, (res) => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => {
+        try { resolve(JSON.parse(data)); } catch (e) { reject(e); }
+      });
+    });
+    req.on('error', reject);
+    if (body) req.write(JSON.stringify(body));
+    req.end();
+  }));
+}
+
+// ============ Field Map Cache ============
+
+let _fieldMap = null;
+
+async function getFieldMap() {
+  if (_fieldMap) return _fieldMap;
+  const data = await api('GET',
+    `/open-apis/bitable/v1/apps/${cfg.baseToken}/tables/${cfg.tableId}/fields`
+  );
+  _fieldMap = {};
+  const items = data.data?.items || [];
+  for (const item of items) {
+    _fieldMap[item.field_id] = item.field_name;
+    _fieldMap[item.field_name] = item.field_id;
   }
-  return { updatedCount: updated };
+  return _fieldMap;
 }
 
-function markDiscrepancy(recordId, flags, note) {
-  const now = new Date().toISOString().replace('T',' ').substring(0,16);
-  const fv = {
+// ============ Record Helpers ============
+
+function mapRecord(fields) {
+  const item = {};
+  if (!fields) return item;
+  const checkboxFields = ['收货确认', '少件', '错件', '破损', '空包'];
+  for (const [key, val] of Object.entries(fields)) {
+    let v = val;
+
+    // Formula / lookup fields: { type: number, value: [...] }
+    if (v && typeof v === 'object' && !Array.isArray(v) && v.value !== undefined) {
+      v = v.value;
+    }
+
+    if (Array.isArray(v) && v.length === 1) {
+      item[key] = v[0].text || v[0].name || v[0].id || String(v[0]);
+    } else if (Array.isArray(v) && v.length > 1) {
+      item[key] = v.map(x => x.text || x.name || x.id || String(x)).join(', ');
+    } else if (v === null || v === undefined) {
+      item[key] = '';
+    } else if (typeof v === 'object') {
+      item[key] = v.text || v.name || v.id || JSON.stringify(v);
+    } else {
+      item[key] = v;
+    }
+    if (checkboxFields.includes(key)) {
+      item[key] = item[key] === true || item[key] === 'true' || item[key] === 'True';
+    }
+  }
+  return item;
+}
+
+function nowStr() {
+  const now = new Date();
+  return now.getFullYear() + '-' +
+    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0') + ' ' +
+    String(now.getHours()).padStart(2, '0') + ':' +
+    String(now.getMinutes()).padStart(2, '0');
+}
+
+// ============ Public API ============
+
+async function searchByTracking(trackingNumber) {
+  await getFieldMap();
+  const data = await api('POST',
+    `/open-apis/bitable/v1/apps/${cfg.baseToken}/tables/${cfg.tableId}/records/search`,
+    {
+      filter: {
+        conjunction: 'and',
+        conditions: [
+          { field_name: cfg.fields.trackingNumber, operator: 'is', value: [trackingNumber] },
+        ],
+      },
+      page_size: 200,
+    }
+  );
+  if (data.code !== 0) throw new Error(data.msg || 'Search failed');
+  return (data.data?.items || []).map(r => ({
+    recordId: r.record_id,
+    ...mapRecord(r.fields),
+  }));
+}
+
+async function batchConfirmReceive(recordIds) {
+  if (!recordIds || recordIds.length === 0) throw new Error('未提供要确认的记录');
+  let updatedCount = 0;
+  for (const rid of recordIds) {
+    try {
+      const data = await api('PUT',
+        `/open-apis/bitable/v1/apps/${cfg.baseToken}/tables/${cfg.tableId}/records/${rid}`,
+        {
+          fields: {
+            [cfg.fields.receiveConfirm]: true,
+            [cfg.fields.receiveStatus]: '收货正常',
+            [cfg.fields.receiveTime]: nowStr(),
+          },
+        }
+      );
+      if (data.code === 0) updatedCount++;
+      else console.error(`Pet update ${rid} failed: ${data.msg}`);
+    } catch (e) {
+      console.error(`Pet update ${rid} error: ${e.message}`);
+    }
+  }
+  return { updatedCount };
+}
+
+async function markDiscrepancy(recordId, flags, note) {
+  if (!recordId) throw new Error('未提供记录ID');
+  const fields = {
     [cfg.fields.receiveStatus]: '收货异常',
-    [cfg.fields.receiveTime]: now,
+    [cfg.fields.receiveTime]: nowStr(),
   };
-  if(flags['少件']) fv[cfg.fields.lessItem]=true;
-  if(flags['错件']) fv[cfg.fields.wrongItem]=true;
-  if(flags['破损']) fv[cfg.fields.damaged]=true;
-  if(flags['空包裹']) fv[cfg.fields.emptyPackage]=true;
-  if(note) fv[cfg.fields.discrepancyNote]=note;
-  runWithFile(`base +record-upsert --base-token ${cfg.baseToken} --table-id ${cfg.tableId} --record-id "${esc(recordId)}"`, fv);
-  return { success:true, recordId };
+  if (flags['少件']) fields[cfg.fields.lessItem] = true;
+  if (flags['错件']) fields[cfg.fields.wrongItem] = true;
+  if (flags['破损']) fields[cfg.fields.damaged] = true;
+  if (flags['空包裹']) fields[cfg.fields.emptyPackage] = true;
+  if (note) fields[cfg.fields.discrepancyNote] = note;
+
+  const data = await api('PUT',
+    `/open-apis/bitable/v1/apps/${cfg.baseToken}/tables/${cfg.tableId}/records/${recordId}`,
+    { fields }
+  );
+  if (data.code !== 0) throw new Error(data.msg || 'Mark discrepancy failed');
+  return { success: true, recordId };
 }
 
-function writeLog(tn, opType, count, detail) {
+async function writeLog(tn, opType, count, detail) {
   try {
-    const fields = { '操作时间': new Date().toISOString().replace('T',' ').substring(0,16), '运单号': tn, '操作类型': opType, '记录数': count, '详情': detail||'' };
-    runWithFile(`base +record-upsert --base-token ${cfg.baseToken} --table-id tblMiQohPeHN4yVh`, fields);
-  } catch(e) { console.error('[PetLog]', e.message); }
+    await api('POST',
+      `/open-apis/bitable/v1/apps/${cfg.baseToken}/tables/tblMiQohPeHN4yVh/records`,
+      {
+        fields: {
+          '操作时间': nowStr(),
+          '运单号': tn,
+          '操作类型': opType,
+          '记录数': count,
+          '详情': detail || '',
+        },
+      }
+    );
+  } catch (e) {
+    console.error('[PetLog] Write failed:', e.message);
+  }
 }
 
 module.exports = { searchByTracking, batchConfirmReceive, markDiscrepancy, writeLog };

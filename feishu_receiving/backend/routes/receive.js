@@ -25,11 +25,11 @@ router.post('/', async (req, res, next) => {
       });
     }
 
-    const result = feishu.batchConfirmReceive(recordIds);
+    const result = await feishu.batchConfirmReceive(recordIds);
 
     // Write log
     const tn = req.body.trackingNumber || '';
-    feishu.writeLog(tn, '确认收货', recordIds.length, '');
+    await feishu.writeLog(tn, '确认收货', recordIds.length, '');
 
     res.json({
       ok: true,
