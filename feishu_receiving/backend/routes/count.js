@@ -30,6 +30,34 @@ router.get('/search', async (req, res, next) => {
 });
 
 // ============ 提交盘点 ============
+// Uses lark-cli --as user for writes (app token lacks write permission on counting base)
+const { execSync, exec } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+function runLarkCli(cmdPrefix, jsonObj) {
+  return new Promise((resolve, reject) => {
+    const tmpFile = `_lark_cnt_${Date.now()}_${Math.random().toString(36).slice(2)}.json`;
+    try {
+      fs.writeFileSync(tmpFile, JSON.stringify(jsonObj), 'utf-8');
+    } catch (e) {
+      return reject(new Error(`Failed to write temp file: ${e.message}`));
+    }
+    exec(`lark-cli ${cmdPrefix} --json @${tmpFile} --as user --format json`, {
+      encoding: 'utf-8', timeout: 15000, maxBuffer: 10 * 1024 * 1024,
+    }, (error, stdout, stderr) => {
+      try { fs.unlinkSync(tmpFile); } catch (_) {}
+      if (error) return reject(new Error(`lark-cli error: ${error.message}${stderr ? ' — ' + stderr : ''}`));
+      try {
+        const jsonStart = stdout.indexOf('{');
+        if (jsonStart === -1) throw new Error('No JSON in output');
+        const result = JSON.parse(stdout.slice(jsonStart));
+        if (!result.ok) throw new Error(result.error?.message || 'lark-cli error');
+        resolve(result.data);
+      } catch (e) { reject(new Error(`lark-cli parse error: ${e.message}`)); }
+    });
+  });
+}
 
 router.post('/submit', async (req, res, next) => {
   try {
@@ -42,11 +70,29 @@ router.post('/submit', async (req, res, next) => {
       });
     }
 
-    const result = await invFeishu.submitCount(recordId, prepArea, storageArea, stockQty);
+    const prepNum = Number(prepArea) || 0;
+    const storNum = Number(storageArea) || 0;
+    const stockNum = Number(stockQty) || 0;
+    const diff = stockNum - (prepNum + storNum);
+    const statusValue = diff === 0 ? '盘点正常' : '盘点差异';
+    const countBaseToken = 'NJtDbaXpSasfuxs2Oadcn02Sncz';
+    const countTableId = 'tbl6YWlpSwOfjOJ7';
+
+    const baseArg = `--base-token ${countBaseToken}`;
+    const tableArg = `--table-id ${countTableId}`;
+
+    await runLarkCli(
+      `base +record-upsert ${baseArg} ${tableArg} --record-id "${recordId}"`,
+      {
+        '备货区': String(prepNum),
+        '库存区': String(storNum),
+        '盘点状态': [statusValue],
+      }
+    );
 
     res.json({
       ok: true,
-      data: result,
+      data: { success: true, recordId, prepArea: prepNum, storageArea: storNum, diff, status: statusValue },
     });
   } catch (e) {
     next(e);
