@@ -300,18 +300,141 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
-// Serve count page inline (avoid FC's Content-Disposition: attachment on static files)
-const countHtml = require('fs').readFileSync(path.join(__dirname, 'public', 'count', 'index.html'), 'utf-8');
-const countCss  = require('fs').readFileSync(path.join(__dirname, 'public', 'count', 'css', 'style.css'), 'utf-8');
-const countApiJs = require('fs').readFileSync(path.join(__dirname, 'public', 'count', 'js', 'api.js'), 'utf-8');
-const countAppJs = require('fs').readFileSync(path.join(__dirname, 'public', 'count', 'js', 'app.js'), 'utf-8');
+// Override FC's Content-Disposition: attachment on all responses
+app.use((req, res, next) => {
+  res.set('Content-Disposition', 'inline');
+  next();
+});
 
-app.get('/count', (req, res) => { res.type('html'); res.send(countHtml); });
-app.get('/count/', (req, res) => { res.type('html'); res.send(countHtml); });
-app.get('/count/css/style.css', (req, res) => { res.type('css'); res.send(countCss); });
-app.get('/count/js/api.js', (req, res) => { res.type('js'); res.send(countApiJs); });
-app.get('/count/js/app.js', (req, res) => { res.type('js'); res.send(countAppJs); });
+// CORS for count page hosted elsewhere (GitHub Pages)
+app.use((req, res, next) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  next();
+});
+
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+// Serve count page (self-contained inline to work around FC HTTP trigger headers)
+app.get('/count', countPageHandler);
+app.get('/count/', countPageHandler);
+
+function countPageHandler(req, res) {
+  res.set('Content-Type', 'text/html; charset=utf-8');
+  res.set('Content-Disposition', 'inline');
+  res.send(`<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>仓库盘点</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei","PingFang SC",sans-serif;font-size:16px;background:#f0f2f5;color:#1f2937;min-height:100vh;display:flex;flex-direction:column;-webkit-tap-highlight-color:transparent}
+.header{background:#1a1a2e;color:#fff;padding:14px 20px;display:flex;align-items:center;box-shadow:0 4px 6px rgba(0,0,0,.07);position:sticky;top:0;z-index:100}
+.header h1{font-size:20px;font-weight:700}
+.search-area{background:linear-gradient(135deg,#1e3a5f,#1a1a2e);padding:14px 16px;text-align:center}
+.search-input{width:100%;height:52px;font-size:20px;font-weight:600;text-align:center;border:3px solid transparent;border-radius:14px;background:#fff;color:#111827;outline:none;transition:border-color .2s,box-shadow .2s}
+.search-input:focus{border-color:#1677ff;box-shadow:0 0 0 4px rgba(22,119,255,.3)}
+.search-input::placeholder{color:#cbd5e1;font-size:15px;font-weight:400}
+.search-hint{color:rgba(255,255,255,.5);font-size:13px;margin-top:8px}
+.progress-bar{display:flex;align-items:center;justify-content:center;padding:10px 16px;background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:52px;z-index:99}
+.progress-item{text-align:center;padding:4px 12px}
+.progress-num{display:block;font-size:22px;font-weight:800}
+.progress-label{font-size:11px;color:#9ca3af;font-weight:500}
+.progress-divider{width:1px;height:32px;background:#e5e7eb}
+.progress-item.green .progress-num{color:#16a34a}
+.progress-item.orange .progress-num{color:#ea580c}
+.results-container{flex:1;padding:12px;overflow-y:auto}
+.result-count{font-size:14px;color:#6b7280;margin-bottom:8px;padding:0 4px}
+.result-count.hidden{display:none}
+.item-cards{display:flex;flex-direction:column;gap:10px}
+.item-card{background:#fff;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;border-left:4px solid #e5e7eb;transition:border-color .3s}
+.item-card.card-pending{border-left-color:#1677ff}
+.item-card.card-normal{border-left-color:#16a34a}
+.item-card.card-diff{border-left-color:#ea580c}
+.item-card.card-submitting{opacity:.6}
+.card-header{padding:12px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none}
+.card-header:active{background:#f9fafb}
+.card-info{flex:1;min-width:0}
+.card-code{font-size:15px;font-weight:700;font-family:Consolas,"Courier New",monospace;word-break:break-all}
+.card-name{font-size:14px;color:#6b7280;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-meta{font-size:12px;color:#9ca3af;margin-top:2px}
+.card-status-badge{font-size:13px;font-weight:600;padding:4px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;margin-left:8px}
+.badge-pending{background:#dbeafe;color:#1e40af}
+.badge-normal{background:#dcfce7;color:#166534}
+.badge-diff{background:#fff7ed;color:#9a3412}
+.card-expand-icon{font-size:14px;color:#9ca3af;margin-left:8px;transition:transform .2s;flex-shrink:0}
+.card-expand-icon.open{transform:rotate(180deg)}
+.card-body{display:none;padding:0 14px 14px;border-top:1px solid #f3f4f6}
+.card-body.open{display:block}
+.card-readonly{margin-bottom:10px}
+.card-field{display:flex;justify-content:space-between;padding:4px 0;font-size:14px}
+.card-field-label{color:#9ca3af;flex-shrink:0}
+.card-field-value{font-weight:600}
+.card-input-row{display:flex;gap:10px;margin-top:8px}
+.card-input-group{flex:1}
+.card-input-label{display:block;font-size:13px;font-weight:600;color:#6b7280;margin-bottom:4px}
+.card-input{width:100%;height:44px;font-size:20px;font-weight:700;text-align:center;border:2px solid #e5e7eb;border-radius:10px;background:#fafbfc;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.card-input:focus{border-color:#1677ff;background:#fff;box-shadow:0 0 0 3px rgba(22,119,255,.15)}
+.card-input:disabled{background:#dcfce7;color:#6b7280;border-color:#86efac}
+.card-input::placeholder{color:#d1d5db;font-size:16px;font-weight:400}
+.card-submit-row{margin-top:10px}
+.btn-submit{width:100%;height:46px;font-size:17px;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-submit:active{transform:scale(.97)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-submit-primary{background:#1677ff;color:#fff}
+.btn-submit-done{background:#dcfce7;color:#166534;border:2px solid #86efac}
+.empty-state,.loading-state,.error-state{text-align:center;padding:80px 20px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.empty-state.hidden,.loading-state.hidden,.error-state.hidden{display:none}
+.empty-icon{font-size:64px;margin-bottom:16px}
+.empty-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.empty-desc{font-size:15px;color:#6b7280}
+.spinner{display:inline-block;width:44px;height:44px;border:4px solid #e5e7eb;border-top-color:#1677ff;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-state{font-size:18px;color:#6b7280}
+.error-message{display:inline-block;font-size:18px;font-weight:600;background:#fef2f2;color:#dc2626;padding:14px 28px;border-radius:14px}
+.toast{position:fixed;top:24px;left:50%;transform:translateX(-50%);padding:14px 32px;border-radius:30px;font-size:17px;font-weight:700;color:#fff;z-index:300;transition:opacity .3s,transform .3s;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast.hidden{opacity:0;transform:translateX(-50%) translateY(-20px);pointer-events:none}
+.toast.success{background:#16a34a}
+.toast.error{background:#dc2626}
+.toast.info{background:#1677ff}
+</style>
+</head>
+<body>
+<header class="header"><h1>📋 仓库盘点</h1></header>
+<div class="search-area">
+<input type="text" id="searchInput" class="search-input" placeholder="🔍 输入料号 / 条码 / 名称搜索..." autofocus autocomplete="off" inputmode="search">
+<div class="search-hint">输入后自动搜索 · 点击结果卡片展开录入</div>
+</div>
+<div class="progress-bar" id="progressBar">
+<div class="progress-item"><span class="progress-num" id="statCounted">-</span><span class="progress-label">已盘</span></div>
+<div class="progress-divider"></div>
+<div class="progress-item"><span class="progress-num" id="statPending">-</span><span class="progress-label">待盘</span></div>
+<div class="progress-divider"></div>
+<div class="progress-item"><span class="progress-num" id="statTotal">-</span><span class="progress-label">总计</span></div>
+<div class="progress-divider"></div>
+<div class="progress-item green"><span class="progress-num" id="statNormal">-</span><span class="progress-label">正常</span></div>
+<div class="progress-divider"></div>
+<div class="progress-item orange"><span class="progress-num" id="statDiff">-</span><span class="progress-label">差异</span></div>
+</div>
+<div id="resultsContainer" class="results-container">
+<div id="resultCount" class="result-count hidden"></div>
+<div id="itemCards" class="item-cards"></div>
+</div>
+<div id="emptyState" class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">输入料号或名称开始盘点</div><div class="empty-desc">支持物料编码、商品条码(69码)、商品名称模糊搜索</div></div>
+<div id="loadingState" class="loading-state hidden"><div class="spinner"></div><div>搜索中...</div></div>
+<div id="errorState" class="error-state hidden"><div id="errorMessage" class="error-message"></div></div>
+<div id="toast" class="toast hidden"></div>
+<script>
+const CountAPI=(()=>{const BASE=window.location.origin;class ApiError extends Error{constructor(s,c,m){super(m);this.status=s;this.code=c}}async function request(p,o={}){const ctrl=new AbortController();const tid=setTimeout(()=>ctrl.abort(),15000);try{const r=await fetch(BASE+p,{...o,signal:ctrl.signal,headers:{"Content-Type":"application/json",...o.headers}});clearTimeout(tid);const b=await r.json().catch(()=>({}));if(!r.ok||!b.ok){const e=b.error||{};throw new ApiError(r.status,e.code||"UNKNOWN",e.message||"请求失败 ("+r.status+")")}return b}catch(e){clearTimeout(tid);if(e instanceof ApiError)throw e;if(e.name==="AbortError")throw new ApiError(504,"TIMEOUT","请求超时");throw new ApiError(0,"NETWORK_ERROR","网络连接失败")}}return{searchItems(q){return request("/api/count/search?q="+encodeURIComponent(q))},submitCount(rid,prep,stor,stock){return request("/api/count/submit",{method:"POST",body:JSON.stringify({recordId:rid,prepArea:prep,storageArea:stor,stockQty:stock})})},getProgress(){return request("/api/count/progress")}}})();
+</script>
+<script>
+const CountApp=(()=>{let items=[],expanded=null,progress={total:0,counted:0,pending:0,normalCount:0,diffCount:0};const $si=document.getElementById("searchInput"),$ic=document.getElementById("itemCards"),$rc=document.getElementById("resultCount"),$es=document.getElementById("emptyState"),$ls=document.getElementById("loadingState"),$ers=document.getElementById("errorState"),$em=document.getElementById("errorMessage"),$to=document.getElementById("toast"),$sc=document.getElementById("statCounted"),$sp=document.getElementById("statPending"),$st=document.getElementById("statTotal"),$sn=document.getElementById("statNormal"),$sd=document.getElementById("statDiff");let tt=null;function toast(m,t){if(tt)clearTimeout(tt);$to.textContent=m;$to.className="toast "+t;tt=setTimeout(()=>{$to.classList.add("hidden");tt=null},2500)}async function loadProg(){try{const r=await CountAPI.getProgress();progress=r.data;renderProg()}catch(e){}}function renderProg(){$sc.textContent=progress.counted;$sp.textContent=progress.pending;$st.textContent=progress.total;$sn.textContent=progress.normalCount;$sd.textContent=progress.diffCount}let dt=null;function onInput(){const q=$si.value.trim();if(dt)clearTimeout(dt);if(!q){items=[];render();$es.classList.remove("hidden");document.getElementById("resultsContainer").style.display="none";return}dt=setTimeout(()=>doSearch(q),300)}async function doSearch(q){$ls.classList.remove("hidden");$es.classList.add("hidden");$ers.classList.add("hidden");document.getElementById("resultsContainer").style.display="none";try{const r=await CountAPI.searchItems(q);items=r.data.items||[];if(items.length===0){$es.classList.remove("hidden");$ic.innerHTML="";$rc.classList.add("hidden")}else{$es.classList.add("hidden");document.getElementById("resultsContainer").style.display="block";render();if(items.length===1)expand(items[0].recordId)}}catch(e){$ers.classList.remove("hidden");$em.textContent=e.message;toast(e.message,"error")}finally{$ls.classList.add("hidden")}}function render(){if(!items.length){$ic.innerHTML="";$rc.classList.add("hidden");return}$rc.textContent="找到 "+items.length+" 条记录";$rc.classList.remove("hidden");$ic.innerHTML=items.map(buildCard).join("")}function cardState(it){const s=it["盘点状态"]||"";if(s.includes("差异"))return"diff";if(s.includes("正常"))return"normal";return"pending"}function esc(s){if(s==null)return"";return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}function buildCard(it){const st=cardState(it),mc=it["物料编码"]||"",pn=it["商品名称"]||"",bc=it["商品条码"]||"",sq=it["在库库存"]||"0",pa=it["备货区"]||"",sa=it["库存区"]||"",status=it["盘点状态"]||"",wh=it["仓库"]||"",done=st!=="pending",bCl=st==="normal"?"badge-normal":st==="diff"?"badge-diff":"badge-pending",bTx=st==="normal"?"✓ 盘点正常":st==="diff"?"⚠ 盘点差异":"待盘点",cCl=st==="normal"?"card-normal":st==="diff"?"card-diff":"card-pending",pn2=Number(pa)||0,sn2=Number(sa)||0,sqn=Number(sq)||0,diff=sqn-pn2-sn2,dT=done?"差异: "+(diff>=0?"+":"")+diff:"";return'<div class="item-card '+cCl+'" data-rid="'+esc(it.recordId)+'" data-state="'+st+'"><div class="card-header" onclick="CountApp.toggleCard(\''+esc(it.recordId)+'\')"><div class="card-info"><div class="card-code">'+esc(mc)+'</div><div class="card-name">'+esc(pn)+'</div><div class="card-meta">'+(bc?esc(bc)+" · ":"")+"在库: "+esc(sq)+(wh?" · "+esc(wh):"")+(dT?" · "+esc(dT):"")+'</div></div><span class="card-status-badge '+bCl+'">'+bTx+'</span><span class="card-expand-icon" id="ei_'+esc(it.recordId)+'">▼</span></div><div class="card-body" id="cb_'+esc(it.recordId)+'"><div class="card-readonly"><div class="card-field"><span class="card-field-label">物料编码</span><span class="card-field-value">'+esc(mc)+'</span></div><div class="card-field"><span class="card-field-label">商品名称</span><span class="card-field-value">'+esc(pn)+'</span></div>'+(bc?'<div class="card-field"><span class="card-field-label">商品条码</span><span class="card-field-value">'+esc(bc)+'</span></div>':"")+'<div class="card-field"><span class="card-field-label">在库库存</span><span class="card-field-value" style="font-size:18px;color:#1677ff">'+esc(sq)+'</span></div></div><div class="card-input-row"><div class="card-input-group"><label class="card-input-label">📦 备货区数量</label><input type="number" class="card-input" id="ip_'+esc(it.recordId)+'" placeholder="0" value="'+esc(pa)+'" inputmode="numeric" pattern="[0-9]*" '+(done?"disabled":"")+'></div><div class="card-input-group"><label class="card-input-label">🏗️ 库存区数量</label><input type="number" class="card-input" id="is_'+esc(it.recordId)+'" placeholder="0" value="'+esc(sa)+'" inputmode="numeric" pattern="[0-9]*" '+(done?"disabled":"")+'></div></div><div class="card-submit-row">'+(done?'<button class="btn-submit btn-submit-done" disabled>✅ 已盘点 ('+bTx+')</button>':'<button class="btn-submit btn-submit-primary" id="bs_'+esc(it.recordId)+'" onclick="CountApp.submitItem(\''+esc(it.recordId)+'\','+esc(sq)+')">✅ 提交盘点</button>')+'</div></div></div>'}function toggleCard(rid){const b=document.getElementById("cb_"+rid),i=document.getElementById("ei_"+rid);if(!b||!i)return;const op=b.classList.contains("open");document.querySelectorAll(".card-body.open").forEach(x=>x.classList.remove("open"));document.querySelectorAll(".card-expand-icon.open").forEach(x=>x.classList.remove("open"));if(!op){b.classList.add("open");i.classList.add("open");expanded=rid;setTimeout(()=>{const inp=document.getElementById("ip_"+rid);if(inp&&!inp.disabled)inp.focus()},100)}else{expanded=null}}function expand(rid){toggleCard(rid)}async function submitItem(rid,sq){const ip=document.getElementById("ip_"+rid),is=document.getElementById("is_"+rid),bs=document.getElementById("bs_"+rid),card=document.querySelector('.item-card[data-rid="'+esc(rid)+'"]');if(!ip||!is||!bs)return;const pa=ip.value.trim(),sa=is.value.trim();if(pa===""&&sa===""){toast("请至少输入备货区或库存区数量","error");return}const pn=Number(pa)||0,sn2=Number(sa)||0,sqn=Number(sq)||0,diff=sqn-pn-sn2;let msg="确认提交盘点？\\n备货区: "+pn+" · 库存区: "+sn2+"\\n合计: "+(pn+sn2);if(diff!==0)msg+="\\n⚠ 与在库库存("+sqn+")差异: "+(diff>=0?"+":"")+diff;if(!confirm(msg))return;bs.disabled=true;bs.textContent="提交中...";ip.disabled=true;is.disabled=true;if(card)card.classList.add("card-submitting");try{const r=await CountAPI.submitCount(rid,pa,sa,sq);if(card){card.classList.remove("card-submitting","card-pending");card.classList.add(r.data.diff===0?"card-normal":"card-diff");card.dataset.state=r.data.diff===0?"normal":"diff"}const bTx=r.data.diff===0?"✓ 盘点正常":"⚠ 盘点差异";bs.className="btn-submit btn-submit-done";bs.disabled=true;bs.textContent="✅ 已盘点 ("+bTx+")";const badge=card&&card.querySelector(".card-status-badge");if(badge){badge.className="card-status-badge "+(r.data.diff===0?"badge-normal":"badge-diff");badge.textContent=r.data.diff===0?"✓ 盘点正常":"⚠ 盘点差异"}const idx=items.findIndex(it=>it.recordId===rid);if(idx>=0){items[idx]["备货区"]=String(pn);items[idx]["库存区"]=String(sn2);items[idx]["盘点状态"]=r.data.status}await loadProg();toast(r.data.diff===0?"✅ 盘点正常，已提交":"⚠ 盘点差异 "+(r.data.diff>=0?"+":"")+r.data.diff+"，已提交",r.data.diff===0?"success":"info")}catch(e){bs.disabled=false;bs.textContent="✅ 提交盘点";ip.disabled=false;is.disabled=false;if(card)card.classList.remove("card-submitting");toast("提交失败: "+e.message,"error")}}function init(){$si.addEventListener("input",onInput);$si.addEventListener("keydown",e=>{if(e.key==="Enter"){if(dt)clearTimeout(dt);const q=$si.value.trim();if(q)doSearch(q)}});loadProg()}return{init,toggleCard,submitItem}})();document.addEventListener("DOMContentLoaded",()=>CountApp.init());
+</script>
+</body>
+</html>`);
+}
 app.get('/:warehouse', (req, res) => {
   const wh = findWh(decodeURIComponent(req.params.warehouse));
   if (!wh) return res.redirect('/');
