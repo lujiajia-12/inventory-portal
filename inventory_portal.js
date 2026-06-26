@@ -298,9 +298,34 @@ async function syncMasterStock() {
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 app.use(express.json());
+
+// Suppress Alibaba Cloud FC's Content-Disposition: attachment on HTML pages
+app.use((req, res, next) => {
+  const _setHeader = res.setHeader.bind(res);
+  res.setHeader = function(name, value) {
+    if (name.toLowerCase() === 'content-disposition' && String(value).includes('attachment')) return res;
+    return _setHeader(name, value);
+  };
+  const _set = res.set.bind(res);
+  res.set = function(field, val) {
+    if (typeof field === 'object') {
+      const filtered = {};
+      for (const [k, v] of Object.entries(field)) {
+        if (k.toLowerCase() !== 'content-disposition' || !String(v).includes('attachment')) filtered[k] = v;
+      }
+      return _set(filtered);
+    }
+    if (field && field.toLowerCase() === 'content-disposition' && String(val || '').includes('attachment')) return res;
+    return _set(field, val);
+  };
+  next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/count', (req, res) => res.sendFile(path.join(__dirname, 'public', 'count', 'index.html')));
+app.get('/count/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'count', 'index.html')));
 app.get('/:warehouse', (req, res) => {
   const wh = findWh(decodeURIComponent(req.params.warehouse));
   if (!wh) return res.redirect('/');
