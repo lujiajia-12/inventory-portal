@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>仓库盘点</title>
+  <link rel="stylesheet" href="/count/css/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <h1>📋 仓库盘点</h1>
+  </header>
+
+  <!-- Search Bar -->
+  <div class="search-area">
+    <input
+      type="text"
+      id="searchInput"
+      class="search-input"
+      placeholder="🔍 输入料号 / 条码 / 名称搜索..."
+      autofocus
+      autocomplete="off"
+      inputmode="search"
+    >
+    <div class="search-hint">输入后自动搜索 · 点击结果卡片展开录入</div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-item">
+      <span class="progress-num" id="statCounted">-</span>
+      <span class="progress-label">已盘</span>
+    </div>
+    <div class="progress-divider"></div>
+    <div class="progress-item">
+      <span class="progress-num" id="statPending">-</span>
+      <span class="progress-label">待盘</span>
+    </div>
+    <div class="progress-divider"></div>
+    <div class="progress-item">
+      <span class="progress-num" id="statTotal">-</span>
+      <span class="progress-label">总计</span>
+    </div>
+    <div class="progress-divider"></div>
+    <div class="progress-item text-green">
+      <span class="progress-num" id="statNormal">-</span>
+      <span class="progress-label">正常</span>
+    </div>
+    <div class="progress-divider"></div>
+    <div class="progress-item text-orange">
+      <span class="progress-num" id="statDiff">-</span>
+      <span class="progress-label">差异</span>
+    </div>
+  </div>
+
+  <!-- Results Area -->
+  <div id="resultsContainer" class="results-container">
+    <div id="resultCount" class="result-count hidden"></div>
+    <div id="itemCards" class="item-cards"></div>
+  </div>
+
+  <!-- Empty State -->
+  <div id="emptyState" class="empty-state">
+    <div class="empty-icon">📦</div>
+    <div class="empty-title">输入料号或名称开始盘点</div>
+    <div class="empty-desc">支持物料编码、商品条码(69码)、商品名称模糊搜索</div>
+  </div>
+
+  <!-- Loading State -->
+  <div id="loadingState" class="loading-state hidden">
+    <div class="spinner"></div>
+    <div>搜索中...</div>
+  </div>
+
+  <!-- Error State -->
+  <div id="errorState" class="error-state hidden">
+    <div id="errorMessage" class="error-message"></div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Scripts -->
+  <script src="/count/js/api.js"></script>
+  <script src="/count/js/app.js"></script>
+</body>
+</html>
