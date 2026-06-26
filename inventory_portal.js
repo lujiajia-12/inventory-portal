@@ -30,7 +30,7 @@ const WAREHOUSES = [
   {
     key: 'xa378', name: 'XA378永惠成品仓',
     table_id: 'tblD3cqD3QOzyUPx',
-    fields: ['整机短代码','产品名称','成品库存'],
+    fields: ['整机短代码','产品名称','成品库存','更新时间'],
     fieldMap: [
       {csvIdx:0,field:'整机短代码'},{csvIdx:1,field:'产品名称'},{csvIdx:2,field:'成品库存',type:'number'}
     ],
@@ -69,6 +69,37 @@ function findWh(key) {
     try { if (decodeURIComponent(key) === wh.name) return wh; } catch(e) {}
   }
   return null;
+}
+
+// ============ 自动创建字段 ============
+
+async function ensureField(tableId, fieldName, fieldType) {
+  try {
+    const data = await feishuRequest('GET',
+      `/open-apis/bitable/v1/apps/${BASE_TOKEN}/tables/${tableId}/fields`);
+    if (data.code !== 0) {
+      console.error(`[Field] 获取字段列表失败 ${tableId}: ${data.msg}`);
+      return false;
+    }
+    const items = data.data?.items || [];
+    if (items.some(item => item.field_name === fieldName)) {
+      console.log(`[Field] "${fieldName}" 已存在于 ${tableId}`);
+      return true;
+    }
+    const createResult = await feishuRequest('POST',
+      `/open-apis/bitable/v1/apps/${BASE_TOKEN}/tables/${tableId}/fields`,
+      { field_name: fieldName, type: fieldType || 1 }
+    );
+    if (createResult.code === 0) {
+      console.log(`[Field] 已创建 "${fieldName}" 在 ${tableId}`);
+      return true;
+    }
+    console.error(`[Field] 创建 "${fieldName}" 失败: ${createResult.msg}`);
+    return false;
+  } catch (e) {
+    console.error(`[Field] 确保 "${fieldName}" 出错: ${e.message}`);
+    return false;
+  }
 }
 
 // ============ 飞书 API ============
@@ -183,6 +214,84 @@ async function getMainTableCodes() {
     pageToken = data.data.page_token;
   }
   return codes;
+}
+
+// ============ 库存同步到总表 ============
+
+const MAIN_TABLE = 'tblxfUkBA54MdLYx';
+const MAIN_CODE_FIELD = '料号';
+
+// 仓库 → 总表字段映射：每个仓库用哪个字段匹配总表料号，库存写入总表哪个字段
+const STOCK_SYNC_MAP = [
+  { whKey: 'xa226',  masterField: 'XA226惠州仓(自动)',     codeField: '料号',     stockField: '可用库存' },
+  { whKey: 'xa378',  masterField: 'XA378永惠成品仓(自动)',  codeField: '整机短代码', stockField: '成品库存' },
+  { whKey: 'supplier', masterField: 'ODM供应商仓(自动)',     codeField: '物料编码',   stockField: '库存数' },
+  { whKey: 'xa400',  masterField: 'XA400咪哈成品仓(自动)',  codeField: '物料编码',   stockField: '库存数量' },
+];
+
+async function syncMasterStock() {
+  const startTime = Date.now();
+  const log = [];
+
+  // 1. 读取总表所有记录，建立 料号 → record_id 索引
+  console.log('[Sync] 读取库存总表...');
+  const masterRecords = await getRecords(MAIN_TABLE);
+  log.push(`总表${masterRecords.length}条`);
+
+  const masterIndex = {}; // code → recordId
+  for (const r of masterRecords) {
+    const code = String(r.fields?.[MAIN_CODE_FIELD] || '').trim();
+    if (code) masterIndex[code] = r.record_id;
+  }
+
+  // 2. 逐个仓库汇总库存
+  const updates = {}; // recordId → { masterField: stockSum }
+
+  for (const m of STOCK_SYNC_MAP) {
+    const wh = findWh(m.whKey);
+    if (!wh) continue;
+
+    console.log(`[Sync] 读取 ${wh.name}...`);
+    const whRecords = await getRecords(wh.table_id);
+    let matched = 0;
+
+    for (const r of whRecords) {
+      const code = String(r.fields?.[m.codeField] || '').trim();
+      const stock = parseInt(r.fields?.[m.stockField]) || 0;
+      if (!code) continue;
+
+      const masterId = masterIndex[code];
+      if (!masterId) continue;
+
+      if (!updates[masterId]) updates[masterId] = {};
+      // 累加：同一料号在同一仓库有多条记录时求和
+      updates[masterId][m.masterField] = (updates[masterId][m.masterField] || 0) + stock;
+      matched++;
+    }
+    log.push(`${wh.name}匹配${matched}条`);
+  }
+
+  // 3. 批量更新总表
+  const updateList = Object.entries(updates).map(([recordId, fields]) => ({
+    record_id: recordId, fields,
+  }));
+
+  console.log(`[Sync] 待更新 ${updateList.length} 条`);
+  let updated = 0, failed = 0;
+  for (let i = 0; i < updateList.length; i += 200) {
+    const chunk = updateList.slice(i, i + 200);
+    const data = await feishuRequest('PATCH',
+      `/open-apis/bitable/v1/apps/${BASE_TOKEN}/tables/${MAIN_TABLE}/records/batch_update`,
+      { records: chunk }
+    );
+    if (data.code === 0) updated += chunk.length;
+    else { failed += chunk.length; console.error('[Sync] 更新失败:', data.msg); }
+    if (i + 200 < updateList.length) await new Promise(r => setTimeout(r, 500));
+  }
+
+  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+  console.log(`[Sync] 完成: ${updated} updated, ${failed} failed, ${elapsed}s`);
+  return { updated, failed, elapsed, log: log.join('; ') };
 }
 
 // ============ Express ============
@@ -348,6 +457,9 @@ app.post('/api/upload', async (req, res) => {
         fields[wh.fieldMap.category] = String(row.category || '');
         fields['状态'] = mainCodes.has(String(row.code || '').trim()) ? ['已匹配'] : ['子新增料号'];
       }
+      if (wh.fields.includes('更新时间')) {
+        fields['更新时间'] = new Date().toISOString().replace('T', ' ').substring(0, 16);
+      }
       return { fields };
     });
 
@@ -361,6 +473,11 @@ app.post('/api/upload', async (req, res) => {
       total: rows.length, success: result.success, failed: result.failed,
       note: (supplierName ? `供应商:${supplierName} ` : '') + `清除${deletedCount}条 写入${result.success}条 ` + result.errors.join(';'),
     });
+
+    // 上传后自动同步库存总表（仅有关联映射的仓库，后台执行不阻塞响应）
+    if (STOCK_SYNC_MAP.some(m => m.whKey === wh.key)) {
+      syncMasterStock().catch(e => console.error('[Sync] 上传后同步失败:', e.message));
+    }
 
     res.json({
       ok: true, success: result.success, failed: result.failed,
@@ -388,18 +505,169 @@ app.get('/api/status', async (req, res) => {
   } catch (e) { res.json({ ok: false, error: e.message }); }
 });
 
-app.listen(PORT, () => {
-  console.log('');
-  console.log('  ╔══════════════════════════════════════════╗');
-  console.log('  ║   \u{1F4E6} 库存录入批量导入工具 v3              ║');
-  console.log('  ║                                        ║');
-  console.log(`  ║   仓库列表: http://localhost:${PORT}          ║`);
-  console.log('  ║                                        ║');
-  WAREHOUSES.forEach(wh => console.log(`  ║   ${wh.name}: /${wh.key}`));
-  console.log('  ║                                        ║');
-  console.log('  ║   按 Ctrl+C 停止                        ║');
-  console.log('  ╚══════════════════════════════════════════╝');
-  console.log('');
-  const { exec } = require('child_process');
-  exec(`start http://localhost:${PORT}`);
+app.post('/api/sync-stock', async (req, res) => {
+  try {
+    const result = await syncMasterStock();
+    res.json({ ok: true, ...result });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
 });
+
+// Export for Alibaba Cloud FC serverless deployment
+module.exports = app;
+
+// ============ 仓库盘点手机端 ============
+const COUNT_BASE_TOKEN = 'NJtDbaXpSasfuxs2Oadcn02Sncz';
+const COUNT_TABLE_ID = 'tbl6YWlpSwOfjOJ7';
+
+// 辅助：用飞书 API 搜盘点记录
+async function searchCountItems(query) {
+  const data = await feishuRequest('POST',
+    `/open-apis/bitable/v1/apps/${COUNT_BASE_TOKEN}/tables/${COUNT_TABLE_ID}/records/search`,
+    {
+      filter: {
+        conjunction: 'or',
+        conditions: [
+          { field_name: '物料编码', operator: 'contains', value: [query] },
+          { field_name: '商品名称', operator: 'contains', value: [query] },
+          { field_name: '商品条码', operator: 'contains', value: [query] },
+        ],
+      },
+      page_size: 200,
+    }
+  );
+  if (data.code !== 0) throw new Error(data.msg || 'Search failed');
+  return (data.data?.items || []).map(r => {
+    const f = r.fields || {};
+    const unwrap = (v) => {
+      if (v === null || v === undefined) return '';
+      if (Array.isArray(v) && v.length === 1 && typeof v[0] === 'object') return v[0].text || v[0].name || '';
+      if (Array.isArray(v) && v.length > 1 && typeof v[0] === 'object') return v.map(x => x.text || x.name || '').join(', ');
+      if (Array.isArray(v)) return v.join(', ');
+      return String(v);
+    };
+    return {
+      recordId: r.record_id,
+      '物料编码': unwrap(f['物料编码']),
+      '商品名称': unwrap(f['商品名称']),
+      '商品条码': unwrap(f['商品条码']),
+      '在库库存': unwrap(f['在库库存']),
+      '备货区': unwrap(f['备货区']),
+      '库存区': unwrap(f['库存区']),
+      '盘点状态': unwrap(f['盘点状态']),
+      '仓库': unwrap(f['仓库']),
+      '仓库代码': unwrap(f['仓库代码']),
+      '分类': unwrap(f['分类']),
+    };
+  });
+}
+
+// GET /api/count/search?q=关键词
+app.get('/api/count/search', async (req, res) => {
+  try {
+    const q = (req.query.q || '').trim();
+    if (!q) return res.json({ ok: true, data: { items: [], query: q } });
+    const items = await searchCountItems(q);
+    res.json({ ok: true, data: { items, query: q, total: items.length } });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: { code: 'SEARCH_FAILED', message: e.message } });
+  }
+});
+
+// POST /api/count/submit
+app.post('/api/count/submit', async (req, res) => {
+  try {
+    const { recordId, prepArea, storageArea, stockQty } = req.body;
+    if (!recordId) return res.status(400).json({ ok: false, error: { code: 'INVALID_INPUT', message: '未提供记录ID' } });
+
+    const prepNum = Number(prepArea) || 0;
+    const storNum = Number(storageArea) || 0;
+    const stockNum = Number(stockQty) || 0;
+    const diff = stockNum - (prepNum + storNum);
+    const statusValue = diff === 0 ? ['盘点正常'] : ['盘点差异'];
+
+    const data = await feishuRequest('PUT',
+      `/open-apis/bitable/v1/apps/${COUNT_BASE_TOKEN}/tables/${COUNT_TABLE_ID}/records/${recordId}`,
+      { fields: { '备货区': String(prepNum), '库存区': String(storNum), '盘点状态': statusValue } }
+    );
+    if (data.code !== 0) throw new Error(data.msg || 'Update failed');
+
+    res.json({ ok: true, data: { success: true, recordId, prepArea: prepNum, storageArea: storNum, diff, status: statusValue[0] } });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: { code: 'SUBMIT_FAILED', message: e.message } });
+  }
+});
+
+// GET /api/count/progress
+app.get('/api/count/progress', async (req, res) => {
+  try {
+    const data = await feishuRequest('GET',
+      `/open-apis/bitable/v1/apps/${COUNT_BASE_TOKEN}/tables/${COUNT_TABLE_ID}/records?page_size=500`
+    );
+    if (data.code !== 0) throw new Error(data.msg || 'Fetch failed');
+
+    const items = data.data?.items || [];
+    let counted = 0, normalCount = 0, diffCount = 0;
+    for (const item of items) {
+      const statusRaw = item.fields?.['盘点状态'];
+      let statusStr = '';
+      if (Array.isArray(statusRaw) && statusRaw.length > 0) {
+        statusStr = statusRaw.map(x => (x && typeof x === 'object') ? (x.text || x.name || '') : String(x || '')).join(',');
+      } else if (statusRaw) {
+        statusStr = String(statusRaw);
+      }
+      if (statusStr) {
+        counted++;
+        if (statusStr.includes('差异')) diffCount++;
+        else normalCount++;
+      }
+    }
+    res.json({ ok: true, data: { total: items.length, counted, pending: items.length - counted, normalCount, diffCount } });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: { code: 'PROGRESS_FAILED', message: e.message } });
+  }
+});
+
+// Start local server only when run directly
+if (require.main === module) {
+  // 确保各仓库的"更新时间"字段 + 总表的自动汇总字段存在
+  (async () => {
+    for (const wh of WAREHOUSES) {
+      if (wh.fields.includes('更新时间')) {
+        await ensureField(wh.table_id, '更新时间', 1);
+      }
+    }
+    // 总表的自动汇总字段（数字类型）
+    for (const m of STOCK_SYNC_MAP) {
+      await ensureField(MAIN_TABLE, m.masterField, 2);
+    }
+  })().catch(e => console.error('ensureField error:', e.message));
+
+  app.listen(PORT, '0.0.0.0', () => {
+    const os = require('os');
+    const ifaces = os.networkInterfaces();
+    let localIP = 'localhost';
+    for (const name of Object.keys(ifaces)) {
+      for (const iface of ifaces[name]) {
+        if (iface.family === 'IPv4' && !iface.internal) {
+          localIP = iface.address;
+          break;
+        }
+      }
+      if (localIP !== 'localhost') break;
+    }
+
+    console.log('');
+    console.log('  ==========================================');
+    console.log('   库存录入批量导入工具 v3');
+    console.log(`   本机访问: http://localhost:${PORT}`);
+    console.log(`   局域网:   http://${localIP}:${PORT}`);
+    WAREHOUSES.forEach(wh => console.log(`   ${wh.name}: /${wh.key}`));
+    console.log('   按 Ctrl+C 停止');
+    console.log('  ==========================================');
+    console.log('');
+    const { exec } = require('child_process');
+    exec(`start http://localhost:${PORT}`);
+  });
+}
