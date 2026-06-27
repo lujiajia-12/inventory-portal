@@ -146,7 +146,6 @@ const CountApp = (() => {
     const category     = item['分类'] || '';
     const warehouseCode = item['仓库代码'] || '';
 
-    const isDone = state !== 'pending';
     const badgeClass = state === 'normal' ? 'badge-normal' : state === 'diff' ? 'badge-diff' : 'badge-pending';
     const badgeText = state === 'normal' ? '✓ 盘点正常' : state === 'diff' ? '⚠ 盘点差异' : '待盘点';
     const cardClass = state === 'normal' ? 'card-normal' : state === 'diff' ? 'card-diff' : 'card-pending';
@@ -156,7 +155,7 @@ const CountApp = (() => {
     const storNum = Number(storageArea) || 0;
     const stockNum = Number(stockQty) || 0;
     const diff = stockNum - prepNum - storNum;
-    const diffText = isDone ? `差异: ${diff >= 0 ? '+' : ''}${diff}` : '';
+    const diffText = (state !== 'pending') ? `差异: ${diff >= 0 ? '+' : ''}${diff}` : '';
 
     return `
 <div class="item-card ${cardClass}" data-record-id="${escHtml(item.recordId)}" data-state="${state}">
@@ -221,7 +220,6 @@ const CountApp = (() => {
           value="${escHtml(prepArea)}"
           inputmode="numeric"
           pattern="[0-9]*"
-          ${isDone ? 'disabled' : ''}
         >
       </div>
       <div class="card-input-group">
@@ -234,22 +232,17 @@ const CountApp = (() => {
           value="${escHtml(storageArea)}"
           inputmode="numeric"
           pattern="[0-9]*"
-          ${isDone ? 'disabled' : ''}
         >
       </div>
     </div>
 
     <!-- Submit button -->
     <div class="card-submit-row">
-      ${isDone ? `
-        <button class="btn-submit btn-submit-done" disabled>✅ 已盘点 (${badgeText})</button>
-      ` : `
-        <button class="btn-submit btn-submit-primary"
-                id="btnSubmit_${escHtml(item.recordId)}"
-                onclick="CountApp.submitItem('${escHtml(item.recordId)}', ${escHtml(stockQty)})">
-          ✅ 提交盘点
-        </button>
-      `}
+      <button class="btn-submit btn-submit-primary"
+              id="btnSubmit_${escHtml(item.recordId)}"
+              onclick="CountApp.submitItem('${escHtml(item.recordId)}', ${escHtml(stockQty)})">
+        ✅ 提交盘点
+      </button>
     </div>
   </div>
 </div>`;
@@ -348,11 +341,13 @@ const CountApp = (() => {
         card.dataset.state = result.data.diff === 0 ? 'normal' : 'diff';
       }
 
-      // Update button
-      const badgeText = result.data.diff === 0 ? '✓ 盘点正常' : '⚠ 盘点差异';
-      btnSubmit.className = 'btn-submit btn-submit-done';
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = `✅ 已盘点 (${badgeText})`;
+      // Re-enable for re-submit
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = '✅ 提交盘点';
+      btnSubmit.className = 'btn-submit btn-submit-primary';
+      inputPrep.disabled = false;
+      inputStor.disabled = false;
+      if (card) card.classList.remove('card-submitting');
 
       // Update badge in card header
       const badge = card?.querySelector('.card-status-badge');
@@ -373,14 +368,15 @@ const CountApp = (() => {
       await loadProgress();
 
       const toastMsg = result.data.diff === 0
-        ? '✅ 盘点正常，已提交'
-        : `⚠ 盘点差异 ${result.data.diff >= 0 ? '+' : ''}${result.data.diff}，已提交`;
+        ? '✅ 盘点正常，已提交（可再次修改）'
+        : `⚠ 盘点差异 ${result.data.diff >= 0 ? '+' : ''}${result.data.diff}，已提交（可再次修改）`;
       showToast(toastMsg, result.data.diff === 0 ? 'success' : 'info');
 
     } catch (e) {
       // Rollback
       btnSubmit.disabled = false;
       btnSubmit.textContent = '✅ 提交盘点';
+      btnSubmit.className = 'btn-submit btn-submit-primary';
       inputPrep.disabled = false;
       inputStor.disabled = false;
       if (card) card.classList.remove('card-submitting');
