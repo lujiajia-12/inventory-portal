@@ -89,8 +89,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei","PingFang SC
 </style>
 </head>
 <body>
-<header class="header"><h1>📋 仓库盘点</h1><button class="server-btn" id="serverBtn" onclick="CountApp.showServerModal()">⚙️ 设置</button></header>
-<div class="ngrok-hint" id="ngrokHint">⚠️ 提交失败？请先打开 <a href="#" id="ngrokLink" target="_blank">ngrok 地址</a> 点 "Visit Site"，再返回刷新。</div>
+<header class="header"><h1>📋 仓库盘点</h1></header>
 <div class="search-area">
 <input type="text" id="searchInput" class="search-input" placeholder="🔍 输入料号 / 条码 / 名称搜索..." autofocus autocomplete="off" inputmode="search">
 <div class="search-hint">输入后自动搜索 · 点击结果卡片展开录入</div>
@@ -114,27 +113,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei","PingFang SC
 <div id="loadingState" class="loading-state hidden"><div class="spinner"></div><div>搜索中...</div></div>
 <div id="errorState" class="error-state hidden"><div id="errorMessage" class="error-message"></div></div>
 <div id="toast" class="toast hidden"></div>
-<div class="server-modal hidden" id="serverModal">
-<div class="server-modal-box">
-<div class="server-modal-title">⚙️ 服务器设置</div>
-<input class="server-modal-input" id="serverInput" placeholder="粘贴 ngrok 地址，如 https://xxx.ngrok-free.dev">
-<div class="server-modal-hint">电脑启动 ngrok 后会显示地址，粘贴到这里保存即可。</div>
-<div class="server-modal-btns">
-<button class="btn-cancel" onclick="CountApp.hideServerModal()">取消</button>
-<button class="btn-save" onclick="CountApp.saveServer()">💾 保存</button>
-</div>
-</div>
-</div>
 <script>
 // API base — 阿里云函数计算
-var API_BASE = localStorage.getItem('count_server') || 'https://portal-inventory-sys-dqnbytafbf.cn-hangzhou.fcapp.run';
+var API_BASE = 'https://portal-inventory-sys-dqnbytafbf.cn-hangzhou.fcapp.run';
 var CountAPI = (function(){
   function ApiError(s,c,m){this.status=s;this.code=c;this.message=m}
   function request(p,o){
     o = o || {};
     var ctrl = new AbortController();
     var tid = setTimeout(function(){ctrl.abort()},15000);
-    return fetch(API_BASE + p, {method:o.method||'GET',signal:ctrl.signal,body:o.body||undefined,headers:{"Content-Type":"application/json","Bypass-Tunnel-Reminder":"true"}}).then(function(r){
+    return fetch(API_BASE + p, {method:o.method||'GET',signal:ctrl.signal,body:o.body||undefined,headers:{"Content-Type":"application/json"}})).then(function(r){
       clearTimeout(tid);
       return r.json().catch(function(){return{}}).then(function(b){
         if(!r.ok||!b.ok){var e=b.error||{};throw new ApiError(r.status,e.code||'UNKNOWN',e.message||'请求失败')}
@@ -164,7 +152,7 @@ var CountApp = (function(){
       $em=document.getElementById('errorMessage'),$to=document.getElementById('toast'),
       $sc=document.getElementById('statCounted'),$sp=document.getElementById('statPending'),
       $st=document.getElementById('statTotal'),$sn=document.getElementById('statNormal'),
-      $sd=document.getElementById('statDiff'),$nh=document.getElementById('ngrokHint');
+      $sd=document.getElementById('statDiff');
   var tt=null;
 
   function toast(m,t){
@@ -196,7 +184,7 @@ var CountApp = (function(){
       items=r.data.items||[];
       if(!items.length){$es.classList.remove('hidden');$ic.innerHTML='';$rc.classList.add('hidden')}
       else{$es.classList.add('hidden');document.getElementById('resultsContainer').style.display='block';render();if(items.length===1)expand(items[0].recordId)}
-    }).catch(function(e){$ers.classList.remove('hidden');$em.textContent=e.message;toast(e.message,'error');if(API_BASE!=='https://portal-inventory-sys-dqnbytafbf.cn-hangzhou.fcapp.run')$nh.classList.add('show')})
+    }).catch(function(e){$ers.classList.remove('hidden');$em.textContent=e.message;toast(e.message,'error');// ngrok hint removed — FC handles everything now})
     .then(function(){$ls.classList.add('hidden')});
   }
 
@@ -253,35 +241,15 @@ var CountApp = (function(){
       var idx=-1;for(var i=0;i<items.length;i++){if(items[i].recordId===rid){idx=i;break}}
       if(idx>=0){items[idx]['备货区']=String(pn);items[idx]['库存区']=String(sn2);items[idx]['盘点状态']=r.data.status}
       loadProg();toast(r.data.diff===0?'✅ 盘点正常，已提交':'⚠ 盘点差异 '+r.data.diff+'，已提交',r.data.diff===0?'success':'info');
-    }).catch(function(e){bs.disabled=false;bs.textContent='✅ 提交盘点';ip.disabled=false;is.disabled=false;if(card)card.classList.remove('card-submitting');toast('提交失败: '+e.message,'error');if(API_BASE!=='https://portal-inventory-sys-dqnbytafbf.cn-hangzhou.fcapp.run')$nh.classList.add('show')});
+    }).catch(function(e){bs.disabled=false;bs.textContent='✅ 提交盘点';ip.disabled=false;is.disabled=false;if(card)card.classList.remove('card-submitting');toast('提交失败: '+e.message,'error');// ngrok hint removed — FC handles everything now});
   }
 
   function init(){
-    updateServerUI();
     $si.addEventListener('input',onInput);
     $si.addEventListener('keydown',function(e){if(e.key==='Enter'){if(dt)clearTimeout(dt);var q=$si.value.trim();if(q)doSearch(q)}});
     loadProg();
   }
-  function showServerModal(){
-    document.getElementById('serverModal').classList.remove('hidden');
-    document.getElementById('serverInput').value=API_BASE==='https://portal-inventory-sys-dqnbytafbf.cn-hangzhou.fcapp.run'?'':API_BASE;
-  }
-  function hideServerModal(){document.getElementById('serverModal').classList.add('hidden')}
-  function saveServer(){
-    var url=document.getElementById('serverInput').value.trim();
-    if(url){url=url.replace(/\/+$/,'');localStorage.setItem('count_server',url);API_BASE=url}
-    else{localStorage.removeItem('count_server');API_BASE='https://portal-inventory-sys-dqnbytafbf.cn-hangzhou.fcapp.run'}
-    updateServerUI();hideServerModal();toast('✅ 已保存: '+API_BASE,'success');
-    items=[];render();document.getElementById('resultsContainer').style.display='none';$es.classList.remove('hidden');loadProg();
-  }
-  function updateServerUI(){
-    var btn=document.getElementById('serverBtn');
-    if(API_BASE==='https://portal-inventory-sys-dqnbytafbf.cn-hangzhou.fcapp.run'){btn.textContent='⚙️ 设置'}
-    else{var s=API_BASE.replace(/^https?:\/\//,'').substring(0,18)+'...';btn.textContent='🟢 '+s}
-    document.getElementById('ngrokLink').href=API_BASE+'/';
-  }
-
-  return {init:init,toggleCard:toggleCard,submitItem:submitItem,showServerModal:showServerModal,hideServerModal:hideServerModal,saveServer:saveServer};
+  return {init:init,toggleCard:toggleCard,submitItem:submitItem};
 })();
 document.addEventListener('DOMContentLoaded',function(){CountApp.init()});
 </script>
