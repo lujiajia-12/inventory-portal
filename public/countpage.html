@@ -134,7 +134,7 @@ var CountAPI = (function(){
     o = o || {};
     var ctrl = new AbortController();
     var tid = setTimeout(function(){ctrl.abort()},15000);
-    return fetch(API_BASE + p, {signal:ctrl.signal,headers:{"Content-Type":"application/json"}}).then(function(r){
+    return fetch(API_BASE + p, {method:o.method||'GET',signal:ctrl.signal,body:o.body||undefined,headers:{"Content-Type":"application/json","Bypass-Tunnel-Reminder":"true"}}).then(function(r){
       clearTimeout(tid);
       return r.json().catch(function(){return{}}).then(function(b){
         if(!r.ok||!b.ok){var e=b.error||{};throw new ApiError(r.status,e.code||'UNKNOWN',e.message||'请求失败')}
