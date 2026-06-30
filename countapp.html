@@ -111,27 +111,53 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft YaHei","PingFang SC
 </div>
 <div id="emptyState" class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">输入料号或名称开始盘点</div><div class="empty-desc">支持物料编码、商品条码(69码)、商品名称模糊搜索</div></div>
 <div id="loadingState" class="loading-state hidden"><div class="spinner"></div><div>搜索中...</div></div>
-<div id="errorState" class="error-state hidden"><div id="errorMessage" class="error-message"></div></div>
+<div id="errorState" class="error-state hidden"><div id="errorMessage" class="error-message"></div><button id="errorRetry" class="btn-submit btn-submit-primary" style="display:none;width:auto;margin-top:14px;padding:10px 32px">🔄 重试</button></div>
 <div id="toast" class="toast hidden"></div>
 <script>
 // API base — 阿里云函数计算
 var API_BASE = 'https://portal-inventory-sys-dqnbytafbf.cn-hangzhou.fcapp.run';
 var CountAPI = (function(){
-  function ApiError(s,c,m){this.status=s;this.code=c;this.message=m}
-  function request(p,o){
+  function ApiError(s,c,m,r){this.status=s;this.code=c;this.message=m;this.retryable=!!r}
+  function isRetryable(e){
+    if(e instanceof ApiError&&e.retryable)return true;
+    if(e.name==='AbortError')return true;
+    if(e instanceof TypeError&&e.message.indexOf('fetch')>=0)return true;
+    return false;
+  }
+  function request(p,o,attempt){
     o = o || {};
+    attempt = attempt || 0;
+    var MAX=3, BASE=500;
+    if(attempt>0){
+      var delay=BASE*Math.pow(2,attempt-1);
+      console.warn('[CountAPI] Retry '+attempt+'/'+MAX+' in '+delay+'ms');
+    }
     var ctrl = new AbortController();
-    var tid = setTimeout(function(){ctrl.abort()},15000);
+    var tid = setTimeout(function(){ctrl.abort()},20000);
     return fetch(API_BASE + p, {method:o.method||'GET',signal:ctrl.signal,body:o.body||undefined,headers:{"Content-Type":"application/json"}}).then(function(r){
       clearTimeout(tid);
       return r.json().catch(function(){return{}}).then(function(b){
-        if(!r.ok||!b.ok){var e=b.error||{};throw new ApiError(r.status,e.code||'UNKNOWN',e.message||'请求失败')}
+        if(!r.ok||!b.ok){
+          var e=b.error||{};
+          var retryable=r.status>=500||r.status===429;
+          var err=new ApiError(r.status,e.code||'UNKNOWN',e.message||'请求失败 ('+r.status+')',retryable);
+          if(retryable&&attempt<MAX)throw err;
+          throw err;
+        }
         return b;
       });
     }).catch(function(e){
       clearTimeout(tid);
-      if(e instanceof ApiError)throw e;
-      throw new ApiError(0,'NETWORK','网络连接失败');
+      if(e instanceof ApiError){
+        if(e.retryable&&attempt<MAX)return new Promise(function(r){setTimeout(function(){r(request(p,o,attempt+1))},BASE*Math.pow(2,attempt))});
+        throw e;
+      }
+      if(e.name==='AbortError'){
+        if(attempt<MAX)return new Promise(function(r){setTimeout(function(){r(request(p,o,attempt+1))},BASE*Math.pow(2,attempt))});
+        throw new ApiError(504,'TIMEOUT','请求超时，请检查网络',false);
+      }
+      if(attempt<MAX)return new Promise(function(r){setTimeout(function(){r(request(p,o,attempt+1))},BASE*Math.pow(2,attempt))});
+      throw new ApiError(0,'NETWORK','网络连接失败，请确认已联网',false);
     });
   }
   return {
@@ -146,22 +172,26 @@ var CountAPI = (function(){
 <script>
 var CountApp = (function(){
   var items=[],progress={total:0,counted:0,pending:0,normalCount:0,diffCount:0};
+  var lastQuery='',submitting={};
   var $si=document.getElementById('searchInput'),$ic=document.getElementById('itemCards'),
       $rc=document.getElementById('resultCount'),$es=document.getElementById('emptyState'),
       $ls=document.getElementById('loadingState'),$ers=document.getElementById('errorState'),
-      $em=document.getElementById('errorMessage'),$to=document.getElementById('toast'),
+      $em=document.getElementById('errorMessage'),$er=document.getElementById('errorRetry'),
+      $to=document.getElementById('toast'),
       $sc=document.getElementById('statCounted'),$sp=document.getElementById('statPending'),
       $st=document.getElementById('statTotal'),$sn=document.getElementById('statNormal'),
       $sd=document.getElementById('statDiff');
   var tt=null;
 
-  function toast(m,t){
-    if(tt)clearTimeout(tt);$to.textContent=m;$to.className='toast '+t;
-    tt=setTimeout(function(){$to.classList.add('hidden');tt=null},2500);
+  function toast(m,t,d){
+    if(tt)clearTimeout(tt);$to.textContent=m;$to.className='toast '+(t||'info');$to.classList.remove('hidden');
+    tt=setTimeout(function(){$to.classList.add('hidden');tt=null},d||2500);
   }
 
   function loadProg(){
-    CountAPI.getProgress().then(function(r){progress=r.data;renderProg()}).catch(function(){});
+    CountAPI.getProgress().then(function(r){progress=r.data;renderProg()}).catch(function(){
+      if($sc.textContent==='-'){$sc.textContent='?';$sp.textContent='?';$st.textContent='?';$sn.textContent='?';$sd.textContent='?'}
+    });
   }
   function renderProg(){
     $sc.textContent=progress.counted;$sp.textContent=progress.pending;
@@ -173,20 +203,27 @@ var CountApp = (function(){
   function onInput(){
     var q=$si.value.trim();
     if(dt)clearTimeout(dt);
-    if(!q){items=[];render();$es.classList.remove('hidden');document.getElementById('resultsContainer').style.display='none';return}
-    dt=setTimeout(function(){doSearch(q)},300);
+    if(!q){lastQuery='';items=[];render();$es.classList.remove('hidden');document.getElementById('resultsContainer').style.display='none';return}
+    dt=setTimeout(function(){doSearch(q)},350);
   }
 
   function doSearch(q){
+    lastQuery=q;
     $ls.classList.remove('hidden');$es.classList.add('hidden');$ers.classList.add('hidden');
     document.getElementById('resultsContainer').style.display='none';
     CountAPI.searchItems(q).then(function(r){
       items=r.data.items||[];
       if(!items.length){$es.classList.remove('hidden');$ic.innerHTML='';$rc.classList.add('hidden')}
       else{$es.classList.add('hidden');document.getElementById('resultsContainer').style.display='block';render();if(items.length===1)expand(items[0].recordId)}
-    }).catch(function(e){$ers.classList.remove('hidden');$em.textContent=e.message;toast(e.message,'error');// ngrok hint removed — FC handles everything now})
+    }).catch(function(e){
+      $ers.classList.remove('hidden');$em.textContent=e.message;
+      if($er&&lastQuery)$er.style.display='inline-block';
+      toast(e.message,'error',4000);
+    })// ngrok hint removed — FC handles everything now
     .then(function(){$ls.classList.add('hidden')});
   }
+
+  function retrySearch(){if(lastQuery)doSearch(lastQuery)}
 
   function render(){
     if(!items.length){$ic.innerHTML='';$rc.classList.add('hidden');return}
@@ -206,7 +243,7 @@ var CountApp = (function(){
         cCl=st==='normal'?'card-normal':st==='diff'?'card-diff':'card-pending',
         pn2=Number(pa)||0,sn2=Number(sa)||0,sqn=Number(sq)||0,diff=sqn-pn2-sn2,
         dT=done?'差异: '+(diff>=0?'+':'')+diff:'';
-    return '<div class="item-card '+cCl+'" data-rid="'+esc(it.recordId)+'"><div class="card-header" onclick="CountApp.toggleCard(\''+esc(it.recordId)+'\')"><div class="card-info"><div class="card-code">'+esc(mc)+'</div><div class="card-name">'+esc(pn)+'</div><div class="card-meta">'+(bc?esc(bc)+' · ':'')+'在库: '+esc(sq)+(wh?' · '+esc(wh):'')+(dT?' · '+esc(dT):'')+'</div></div><span class="card-status-badge '+bCl+'">'+bTx+'</span><span class="card-expand-icon" id="ei_'+esc(it.recordId)+'">▼</span></div><div class="card-body" id="cb_'+esc(it.recordId)+'"><div class="card-readonly"><div class="card-field"><span class="card-field-label">物料编码</span><span class="card-field-value">'+esc(mc)+'</span></div><div class="card-field"><span class="card-field-label">商品名称</span><span class="card-field-value">'+esc(pn)+'</span></div>'+(bc?'<div class="card-field"><span class="card-field-label">商品条码</span><span class="card-field-value">'+esc(bc)+'</span></div>':'')+'<div class="card-field"><span class="card-field-label">在库库存</span><span class="card-field-value" style="font-size:18px;color:#1677ff">'+esc(sq)+'</span></div></div><div class="card-input-row"><div class="card-input-group"><label class="card-input-label">📦 备货区数量</label><input type="number" class="card-input" id="ip_'+esc(it.recordId)+'" placeholder="0" value="'+esc(pa)+'" inputmode="numeric" '+(done?'disabled':'')+'></div><div class="card-input-group"><label class="card-input-label">🏗️ 库存区数量</label><input type="number" class="card-input" id="is_'+esc(it.recordId)+'" placeholder="0" value="'+esc(sa)+'" inputmode="numeric" '+(done?'disabled':'')+'></div></div><div class="card-submit-row">'+(done?'<button class="btn-submit btn-submit-done" disabled>✅ 已盘点 ('+bTx+')</button>':'<button class="btn-submit btn-submit-primary" id="bs_'+esc(it.recordId)+'" onclick="CountApp.submitItem(\''+esc(it.recordId)+'\','+esc(sq)+')">✅ 提交盘点</button>')+'</div></div></div>';
+    return '<div class="item-card '+cCl+'" data-rid="'+esc(it.recordId)+'"><div class="card-header" onclick="CountApp.toggleCard(\''+esc(it.recordId)+'\')"><div class="card-info"><div class="card-code">'+esc(mc)+'</div><div class="card-name">'+esc(pn)+'</div><div class="card-meta">'+(bc?esc(bc)+' · ':'')+'在库: '+esc(sq)+(wh?' · '+esc(wh):'')+(dT?' · '+esc(dT):'')+'</div></div><span class="card-status-badge '+bCl+'">'+bTx+'</span><span class="card-expand-icon" id="ei_'+esc(it.recordId)+'">▼</span></div><div class="card-body" id="cb_'+esc(it.recordId)+'"><div class="card-readonly"><div class="card-field"><span class="card-field-label">物料编码</span><span class="card-field-value">'+esc(mc)+'</span></div><div class="card-field"><span class="card-field-label">商品名称</span><span class="card-field-value">'+esc(pn)+'</span></div>'+(bc?'<div class="card-field"><span class="card-field-label">商品条码</span><span class="card-field-value">'+esc(bc)+'</span></div>':'')+'<div class="card-field"><span class="card-field-label">在库库存</span><span class="card-field-value" style="font-size:18px;color:#1677ff">'+esc(sq)+'</span></div></div>'+(done?'<div class="card-submit-row"><button class="btn-submit btn-submit-done" disabled>✅ 已盘点 ('+bTx+')</button></div>':'<div class="card-input-row"><div class="card-input-group"><label class="card-input-label">📦 备货区数量</label><input type="number" class="card-input" id="ip_'+esc(it.recordId)+'" placeholder="0" value="'+esc(pa)+'" inputmode="numeric"></div><div class="card-input-group"><label class="card-input-label">🏗️ 库存区数量</label><input type="number" class="card-input" id="is_'+esc(it.recordId)+'" placeholder="0" value="'+esc(sa)+'" inputmode="numeric"></div></div><div class="card-submit-row"><button class="btn-submit btn-submit-primary" id="bs_'+esc(it.recordId)+'" onclick="CountApp.submitItem(\''+esc(it.recordId)+'\','+esc(sq)+')">✅ 提交盘点</button></div>')+'</div></div>';
   }
 
   function toggleCard(rid){
@@ -220,6 +257,7 @@ var CountApp = (function(){
   function expand(rid){toggleCard(rid)}
 
   function submitItem(rid,sq){
+    if(submitting[rid])return;
     var ip=document.getElementById('ip_'+rid),is=document.getElementById('is_'+rid),
         bs=document.getElementById('bs_'+rid),
         card=document.querySelector('.item-card[data-rid="'+esc(rid)+'"]');
@@ -230,6 +268,7 @@ var CountApp = (function(){
     var msg='确认提交盘点？\n备货区: '+pn+' · 库存区: '+sn2+'\n合计: '+(pn+sn2);
     if(diff!==0)msg+='\n⚠ 与在库库存('+sqn+')差异: '+(diff>=0?'+':'')+diff;
     if(!confirm(msg))return;
+    submitting[rid]=true;
     bs.disabled=true;bs.textContent='提交中...';ip.disabled=true;is.disabled=true;
     if(card)card.classList.add('card-submitting');
     CountAPI.submitCount(rid,pa,sa,sq).then(function(r){
@@ -240,13 +279,17 @@ var CountApp = (function(){
       if(badge){badge.className='card-status-badge '+(r.data.diff===0?'badge-normal':'badge-diff');badge.textContent=r.data.diff===0?'✓ 盘点正常':'⚠ 盘点差异'}
       var idx=-1;for(var i=0;i<items.length;i++){if(items[i].recordId===rid){idx=i;break}}
       if(idx>=0){items[idx]['备货区']=String(pn);items[idx]['库存区']=String(sn2);items[idx]['盘点状态']=r.data.status}
-      loadProg();toast(r.data.diff===0?'✅ 盘点正常，已提交':'⚠ 盘点差异 '+r.data.diff+'，已提交',r.data.diff===0?'success':'info');
-    }).catch(function(e){bs.disabled=false;bs.textContent='✅ 提交盘点';ip.disabled=false;is.disabled=false;if(card)card.classList.remove('card-submitting');toast('提交失败: '+e.message,'error');// ngrok hint removed — FC handles everything now});
+      loadProg();toast(r.data.diff===0?'✅ 盘点正常，已提交':'⚠ 盘点差异 '+r.data.diff+'，已提交',r.data.diff===0?'success':'info',3500);
+    }).catch(function(e){
+      bs.disabled=false;bs.textContent='✅ 提交盘点';ip.disabled=false;is.disabled=false;
+      if(card)card.classList.remove('card-submitting');toast('提交失败: '+e.message,'error',5000);
+    }).then(function(){delete submitting[rid]});
   }
 
   function init(){
     $si.addEventListener('input',onInput);
     $si.addEventListener('keydown',function(e){if(e.key==='Enter'){if(dt)clearTimeout(dt);var q=$si.value.trim();if(q)doSearch(q)}});
+    if($er){$er.addEventListener('click',retrySearch);$er.style.display='none'}
     loadProg();
   }
   return {init:init,toggleCard:toggleCard,submitItem:submitItem};

@@ -7,6 +7,8 @@ const CountApp = (() => {
   let currentItems = [];       // Current search results
   let expandedCard = null;    // Currently expanded card recordId
   let progress = { total: 0, counted: 0, pending: 0, normalCount: 0, diffCount: 0 };
+  let lastQuery = '';         // Preserved for retry
+  let submittingIds = {};     // Track submitting state per recordId
 
   // DOM refs
   const $searchInput   = document.getElementById('searchInput');
@@ -17,6 +19,7 @@ const CountApp = (() => {
   const $loadingState  = document.getElementById('loadingState');
   const $errorState    = document.getElementById('errorState');
   const $errorMessage  = document.getElementById('errorMessage');
+  const $errorRetry    = document.getElementById('errorRetry');
   const $toast         = document.getElementById('toast');
 
   // Progress stat DOM refs
@@ -29,14 +32,15 @@ const CountApp = (() => {
   // ===== Toast =====
   let toastTimer = null;
 
-  function showToast(msg, type = 'info') {
+  function showToast(msg, type = 'info', duration = 3000) {
     if (toastTimer) clearTimeout(toastTimer);
     $toast.textContent = msg;
     $toast.className = `toast ${type}`;
+    $toast.classList.remove('hidden');
     toastTimer = setTimeout(() => {
       $toast.classList.add('hidden');
       toastTimer = null;
-    }, 2500);
+    }, duration);
   }
 
   // ===== Progress =====
@@ -47,7 +51,14 @@ const CountApp = (() => {
       progress = result.data;
       renderProgress();
     } catch (_) {
-      // Best-effort
+      // Keep stale progress, show subtle indicator
+      if ($statCounted.textContent === '-') {
+        $statCounted.textContent = '?';
+        $statPending.textContent = '?';
+        $statTotal.textContent = '?';
+        $statNormal.textContent = '?';
+        $statDiff.textContent = '?';
+      }
     }
   }
 
@@ -69,17 +80,21 @@ const CountApp = (() => {
     if (debounceTimer) clearTimeout(debounceTimer);
 
     if (!q || q.length < 1) {
+      lastQuery = '';
       currentItems = [];
       renderResults();
       showEmpty();
       return;
     }
 
-    // Debounce 300ms
-    debounceTimer = setTimeout(() => doSearch(q), 300);
+    // Debounce 350ms
+    debounceTimer = setTimeout(() => doSearch(q), 350);
   }
 
   async function doSearch(q) {
+    if (!q || q.trim().length < 1) return;
+
+    lastQuery = q;
     showLoading();
     hideError();
 
@@ -91,21 +106,24 @@ const CountApp = (() => {
         showEmpty();
         $itemCards.innerHTML = '';
         $resultCount.classList.add('hidden');
-        showToast('未找到匹配项', 'info');
+        showToast('未找到匹配项', 'info', 2000);
       } else {
         hideEmpty();
         renderResults();
         if (currentItems.length === 1) {
-          // Auto-expand single result
           expandCard(currentItems[0].recordId);
         }
       }
     } catch (e) {
       showError(e.message);
-      showToast(e.message, 'error');
+      showToast(e.message, 'error', 4000);
     } finally {
       hideLoading();
     }
+  }
+
+  function retrySearch() {
+    if (lastQuery) doSearch(lastQuery);
   }
 
   // ===== Render =====
@@ -123,9 +141,6 @@ const CountApp = (() => {
     $itemCards.innerHTML = currentItems.map(item => buildCardHTML(item)).join('');
   }
 
-  /**
-   * Determine card state from Feishu data.
-   */
   function getCardState(item) {
     const status = item['盘点状态'] || '';
     if (status.includes('差异')) return 'diff';
@@ -149,17 +164,16 @@ const CountApp = (() => {
     const badgeClass = state === 'normal' ? 'badge-normal' : state === 'diff' ? 'badge-diff' : 'badge-pending';
     const badgeText = state === 'normal' ? '✓ 盘点正常' : state === 'diff' ? '⚠ 盘点差异' : '待盘点';
     const cardClass = state === 'normal' ? 'card-normal' : state === 'diff' ? 'card-diff' : 'card-pending';
+    const done = state !== 'pending';
 
-    // Compute diff if already counted
     const prepNum = Number(prepArea) || 0;
     const storNum = Number(storageArea) || 0;
     const stockNum = Number(stockQty) || 0;
     const diff = stockNum - prepNum - storNum;
-    const diffText = (state !== 'pending') ? `差异: ${diff >= 0 ? '+' : ''}${diff}` : '';
+    const diffText = done ? `差异: ${diff >= 0 ? '+' : ''}${diff}` : '';
 
     return `
 <div class="item-card ${cardClass}" data-record-id="${escHtml(item.recordId)}" data-state="${state}">
-  <!-- Header (always visible) -->
   <div class="card-header" onclick="CountApp.toggleCard('${escHtml(item.recordId)}')">
     <div class="card-info">
       <div class="card-code">${escHtml(materialCode)}</div>
@@ -175,9 +189,7 @@ const CountApp = (() => {
     <span class="card-expand-icon" id="expandIcon_${escHtml(item.recordId)}">▼</span>
   </div>
 
-  <!-- Body (expandable edit area) -->
   <div class="card-body" id="cardBody_${escHtml(item.recordId)}">
-    <!-- Readonly info -->
     <div class="card-readonly">
       <div class="card-field">
         <span class="card-field-label">物料编码</span>
@@ -208,42 +220,29 @@ const CountApp = (() => {
       </div>` : ''}
     </div>
 
-    <!-- Input row -->
+    ${done ? `
+    <div class="card-submit-row">
+      <button class="btn-submit btn-submit-done" disabled>✅ 已盘点 (${badgeText})</button>
+    </div>` : `
     <div class="card-input-row">
       <div class="card-input-group">
         <label class="card-input-label">📦 备货区数量</label>
-        <input
-          type="number"
-          class="card-input"
-          id="inputPrep_${escHtml(item.recordId)}"
-          placeholder="0"
-          value="${escHtml(prepArea)}"
-          inputmode="numeric"
-          pattern="[0-9]*"
-        >
+        <input type="number" class="card-input" id="inputPrep_${escHtml(item.recordId)}"
+          placeholder="0" value="${escHtml(prepArea)}" inputmode="numeric" pattern="[0-9]*">
       </div>
       <div class="card-input-group">
         <label class="card-input-label">🏗️ 库存区数量</label>
-        <input
-          type="number"
-          class="card-input"
-          id="inputStor_${escHtml(item.recordId)}"
-          placeholder="0"
-          value="${escHtml(storageArea)}"
-          inputmode="numeric"
-          pattern="[0-9]*"
-        >
+        <input type="number" class="card-input" id="inputStor_${escHtml(item.recordId)}"
+          placeholder="0" value="${escHtml(storageArea)}" inputmode="numeric" pattern="[0-9]*">
       </div>
     </div>
-
-    <!-- Submit button -->
     <div class="card-submit-row">
       <button class="btn-submit btn-submit-primary"
               id="btnSubmit_${escHtml(item.recordId)}"
               onclick="CountApp.submitItem('${escHtml(item.recordId)}', ${escHtml(stockQty)})">
         ✅ 提交盘点
       </button>
-    </div>
+    </div>`}
   </div>
 </div>`;
   }
@@ -272,12 +271,10 @@ const CountApp = (() => {
     document.querySelectorAll('.card-expand-icon.open').forEach(i => i.classList.remove('open'));
 
     if (!isOpen) {
-      // Open this one
       body.classList.add('open');
       icon.classList.add('open');
       expandedCard = recordId;
 
-      // Focus the first input
       setTimeout(() => {
         const input = document.getElementById('inputPrep_' + recordId);
         if (input && !input.disabled) input.focus();
@@ -294,6 +291,9 @@ const CountApp = (() => {
   // ===== Submit =====
 
   async function submitItem(recordId, stockQty) {
+    // Prevent double-submit
+    if (submittingIds[recordId]) return;
+
     const inputPrep = document.getElementById('inputPrep_' + recordId);
     const inputStor = document.getElementById('inputStor_' + recordId);
     const btnSubmit = document.getElementById('btnSubmit_' + recordId);
@@ -304,9 +304,8 @@ const CountApp = (() => {
     const prepArea = inputPrep.value.trim();
     const storageArea = inputStor.value.trim();
 
-    // Validate
     if (prepArea === '' && storageArea === '') {
-      showToast('请至少输入备货区或库存区数量', 'error');
+      showToast('请至少输入备货区或库存区数量', 'error', 3000);
       return;
     }
 
@@ -323,7 +322,8 @@ const CountApp = (() => {
 
     if (!window.confirm(confirmMsg)) return;
 
-    // Optimistic UI
+    // Lock UI
+    submittingIds[recordId] = true;
     btnSubmit.disabled = true;
     btnSubmit.textContent = '提交中...';
     inputPrep.disabled = true;
@@ -341,19 +341,20 @@ const CountApp = (() => {
         card.dataset.state = result.data.diff === 0 ? 'normal' : 'diff';
       }
 
-      // Re-enable for re-submit
-      btnSubmit.disabled = false;
-      btnSubmit.textContent = '✅ 提交盘点';
-      btnSubmit.className = 'btn-submit btn-submit-primary';
-      inputPrep.disabled = false;
-      inputStor.disabled = false;
+      // Mark as done — disable inputs, change button
+      const newBadgeText = result.data.diff === 0 ? '✓ 盘点正常' : '⚠ 盘点差异';
+      btnSubmit.className = 'btn-submit btn-submit-done';
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = '✅ 已盘点 (' + newBadgeText + ')';
+      inputPrep.disabled = true;
+      inputStor.disabled = true;
       if (card) card.classList.remove('card-submitting');
 
       // Update badge in card header
-      const badge = card?.querySelector('.card-status-badge');
+      const badge = card && card.querySelector('.card-status-badge');
       if (badge) {
         badge.className = `card-status-badge ${result.data.diff === 0 ? 'badge-normal' : 'badge-diff'}`;
-        badge.textContent = result.data.diff === 0 ? '✓ 盘点正常' : '⚠ 盘点差异';
+        badge.textContent = newBadgeText;
       }
 
       // Update item in currentItems
@@ -368,19 +369,21 @@ const CountApp = (() => {
       await loadProgress();
 
       const toastMsg = result.data.diff === 0
-        ? '✅ 盘点正常，已提交（可再次修改）'
-        : `⚠ 盘点差异 ${result.data.diff >= 0 ? '+' : ''}${result.data.diff}，已提交（可再次修改）`;
-      showToast(toastMsg, result.data.diff === 0 ? 'success' : 'info');
+        ? '✅ 盘点正常，已提交'
+        : `⚠ 盘点差异 ${result.data.diff >= 0 ? '+' : ''}${result.data.diff}，已提交`;
+      showToast(toastMsg, result.data.diff === 0 ? 'success' : 'info', 3500);
 
     } catch (e) {
-      // Rollback
+      // Restore UI
       btnSubmit.disabled = false;
       btnSubmit.textContent = '✅ 提交盘点';
       btnSubmit.className = 'btn-submit btn-submit-primary';
       inputPrep.disabled = false;
       inputStor.disabled = false;
       if (card) card.classList.remove('card-submitting');
-      showToast(`提交失败: ${e.message}`, 'error');
+      showToast(`提交失败: ${e.message}`, 'error', 5000);
+    } finally {
+      delete submittingIds[recordId];
     }
   }
 
@@ -415,10 +418,15 @@ const CountApp = (() => {
     $errorState.classList.remove('hidden');
     $errorMessage.textContent = msg;
     $loadingState.classList.add('hidden');
+    // Show retry button if we have a last query
+    if (lastQuery && $errorRetry) {
+      $errorRetry.style.display = 'inline-block';
+    }
   }
 
   function hideError() {
     $errorState.classList.add('hidden');
+    if ($errorRetry) $errorRetry.style.display = 'none';
   }
 
   // ===== Init =====
@@ -427,7 +435,7 @@ const CountApp = (() => {
     // Search input handler
     $searchInput.addEventListener('input', onSearchInput);
 
-    // Also trigger on Enter key
+    // Trigger on Enter key (instant, no debounce)
     $searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         if (debounceTimer) clearTimeout(debounceTimer);
@@ -436,13 +444,10 @@ const CountApp = (() => {
       }
     });
 
-    // Click on page background to refocus search
-    document.addEventListener('click', (e) => {
-      // Don't refocus if clicking on card or input
-      if (e.target.closest('.item-card') || e.target.closest('input')) return;
-      if (document.activeElement === $searchInput) return;
-      // Don't steal focus during submit confirmation dialog
-    });
+    // Retry button
+    if ($errorRetry) {
+      $errorRetry.addEventListener('click', retrySearch);
+    }
 
     // Load initial progress
     loadProgress();
