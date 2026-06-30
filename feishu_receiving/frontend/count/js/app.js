@@ -341,13 +341,13 @@ const CountApp = (() => {
         card.dataset.state = result.data.diff === 0 ? 'normal' : 'diff';
       }
 
-      // Mark as done — disable inputs, change button
+      // Update badge + card state, but RE-ENABLE for re-submit
       const newBadgeText = result.data.diff === 0 ? '✓ 盘点正常' : '⚠ 盘点差异';
-      btnSubmit.className = 'btn-submit btn-submit-done';
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = '✅ 已盘点 (' + newBadgeText + ')';
-      inputPrep.disabled = true;
-      inputStor.disabled = true;
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = '✅ 提交盘点';
+      btnSubmit.className = 'btn-submit btn-submit-primary';
+      inputPrep.disabled = false;
+      inputStor.disabled = false;
       if (card) card.classList.remove('card-submitting');
 
       // Update badge in card header

@@ -274,12 +274,14 @@ var CountApp = (function(){
     CountAPI.submitCount(rid,pa,sa,sq).then(function(r){
       if(card){card.classList.remove('card-submitting','card-pending');card.classList.add(r.data.diff===0?'card-normal':'card-diff');card.dataset.state=r.data.diff===0?'normal':'diff'}
       var bTx=r.data.diff===0?'✓ 盘点正常':'⚠ 盘点差异';
-      bs.className='btn-submit btn-submit-done';bs.disabled=true;bs.textContent='✅ 已盘点 ('+bTx+')';
+      bs.disabled=false;bs.textContent='✅ 提交盘点';bs.className='btn-submit btn-submit-primary';
+      ip.disabled=false;is.disabled=false;
+      if(card)card.classList.remove('card-submitting');
       var badge=card&&card.querySelector('.card-status-badge');
       if(badge){badge.className='card-status-badge '+(r.data.diff===0?'badge-normal':'badge-diff');badge.textContent=r.data.diff===0?'✓ 盘点正常':'⚠ 盘点差异'}
       var idx=-1;for(var i=0;i<items.length;i++){if(items[i].recordId===rid){idx=i;break}}
       if(idx>=0){items[idx]['备货区']=String(pn);items[idx]['库存区']=String(sn2);items[idx]['盘点状态']=r.data.status}
-      loadProg();toast(r.data.diff===0?'✅ 盘点正常，已提交':'⚠ 盘点差异 '+r.data.diff+'，已提交',r.data.diff===0?'success':'info',3500);
+      loadProg();toast(r.data.diff===0?'✅ 盘点正常，已提交（可再次修改）':'⚠ 盘点差异 '+r.data.diff+'，已提交（可再次修改）',r.data.diff===0?'success':'info',3500);
     }).catch(function(e){
       bs.disabled=false;bs.textContent='✅ 提交盘点';ip.disabled=false;is.disabled=false;
       if(card)card.classList.remove('card-submitting');toast('提交失败: '+e.message,'error',5000);
