@@ -220,10 +220,6 @@ const CountApp = (() => {
       </div>` : ''}
     </div>
 
-    ${done ? `
-    <div class="card-submit-row">
-      <button class="btn-submit btn-submit-done" disabled>✅ 已盘点 (${badgeText})</button>
-    </div>` : `
     <div class="card-input-row">
       <div class="card-input-group">
         <label class="card-input-label">📦 备货区数量</label>
@@ -242,7 +238,7 @@ const CountApp = (() => {
               onclick="CountApp.submitItem('${escHtml(item.recordId)}', ${escHtml(stockQty)})">
         ✅ 提交盘点
       </button>
-    </div>`}
+    </div>
   </div>
 </div>`;
   }
